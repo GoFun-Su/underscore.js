@@ -27,5 +27,17 @@
       	slice = ArrayProto.slice,
       	toString = ObjProto.toString,
       	hasOwnProperty = ObjProto.hasOwnProperty;
+
+      // **ECMAScript 5** 方法
+      // Array.isArray() 用于确定传递的值是否是一个 Array。
+      //Array.prototype instanceof Array false
+      //[] instanceof Array   true
+      //Array.isArray([])    true
+      //Array.isArray(Array.prototype)   true ;Array.prototype 本身也是一个 Array ,Array.prototype.length = 0;
+
+      var nativeIsArray = Array.isArray,
+          nativeKeys = Object.keys,
+          nativeCreate = Object.create;
+
           
   }());
