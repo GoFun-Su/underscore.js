@@ -161,6 +161,8 @@
   // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
   // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
   var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+  // shallowProperty穿入一个参数，返回一个函数，
+  // 该函数传入一个参数，返回参数的 length 属性值
   var getLength = shallowProperty('length');
   var isArrayLike = function(collection) {
     var length = getLength(collection);
