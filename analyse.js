@@ -225,5 +225,49 @@
         //返回最后的结果
         return results;
     };
+
+
+    var createReduce = function(dir) {
+        var reducer = function(obj, iteratee, memo, initial) {
+            //initial为布尔值
+            //如果不是类数组，是对象的话，获取key组成的数组
+            var keys = !isArrayLike(obj) && _.keys(obj),
+            //长度(类数组的长度或者对象的key的长度)
+            length = (keys || obj).length,
+            //判断dir为1或者-1，为1的时候index为0，为-1的时候index为长度-1；(类似搜索是从上搜索还是从下搜索？)
+            index = dir > 0 ? 0 : length - 1;
+            //如果initial为false
+            if (!initial) {
+                //获取当前索引值或者键值
+                memo = obj[keys ? keys[index] : index];
+                //索引值加上dir(即是加一或者减一)，dir为1的时候是向下搜索，即是索引值加一，dir为-1
+                //的时候向上，即是减一
+                index += dir;
+            }
+            //依次循环
+            for (; index >= 0 && index < length; index += dir) {
+                var currentKey = keys ? keys[index] : index;
+                memo = iteratee(memo, obj[currentKey], currentKey, obj);
+            }
+            return memo;
+        };
+
+        return function(obj, iteratee, memo, context) {
+            var initial = arguments.length >= 3;
+            //optimizeCb(iteratee, context, 4) context为undefined,所以还是返回原函数
+            return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial);
+        };
+    };
+
+    _.reduce = _.foldl = _.inject = createReduce(1);、
+      //_.reduce返回的是function(obj, iteratee, memo, context) {var initial = arguments.length >= 3; 
+      //return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial); };这个函数
+    //调用
+    //var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+    //相当于从左到右相加1,3,6
+    _.reduceRight = _.foldr = createReduce(-1);
+     //var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+    //相当于从右向左相加，3,5,6
+
           
 }());

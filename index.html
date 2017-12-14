@@ -119,31 +119,12 @@
     var p = function name(na){}
     	console.log(p["length"])*/
     var _ = {};
-    _.map = _.collect = function(obj, iteratee, context) {
-    	//根据不同的iteratee类型，执行不同的函数，如果iteratee是函数的时候，和_.each是一样的
-    	//iteratee = optimizeCb(value, context, argCount)
-        iteratee = optimizeCb(iteratee, context);
-        //不是类数组是对象的话，将对象的key存入keys数组里面
-        var keys =  _.keys(obj),
-        //key存在的情况下，是对象获取keys数组的length,否则是数组，获取数组的长度
-        length = (keys || obj).length,
-        //长度为length的数组
-        results = Array(length);
-        for (var index = 0; index < length; index++) {
-        	//对象为key,数组为索引
-          var currentKey = keys ? keys[index] : index;
-          results[index] = iteratee(obj[currentKey], currentKey, obj);
-        }
-        //返回最后的结果
-        return results;
-    };
-     _.keys = function(obj) {
-    	var keys = [];
-    	for (var key in obj)  keys.push(key);
-    	
-   	 	return keys;
+      _.keys = function(obj) {
+    
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    return keys;
   };
-
     var optimizeCb = function(func, context, argCount) {
     	if (context === void 0) return func;
     	switch (argCount) {
@@ -163,7 +144,30 @@
       		return func.apply(context, arguments);
     	};
   };
-    
-    _.map([1,2,3],function iteratee(num,key){console.log(key)})
+    var createReduce = function(dir) {
+        var reducer = function(obj, iteratee, memo, initial) {
+            length = obj.length,
+          
+            index = dir > 0 ? 0 : length - 1;
+            
+            //依次循环
+            for (; index >= 0 && index < length; index += dir) {
+                var currentKey = index;
+                memo = iteratee(memo, obj[currentKey], currentKey, obj);
+                console.log(memo)
+            }
+
+            return memo;
+        };
+
+        return function(obj, iteratee, memo, context) {
+            var initial = arguments.length >= 3;
+            return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial);
+        };
+    };
+     _.reduce = createReduce(-1);
+     var list = [[0, 1], [2, 3], [4, 5]];
+	var flat = _.reduce(list, function(a, b) { return a.concat(b); }, []);
+   
 </script>
 </html>
