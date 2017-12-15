@@ -269,5 +269,66 @@
      //var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
     //相当于从右向左相加，3,5,6
 
+    //返回查找的第一个正确的值
+    _.find = _.detect = function(obj, predicate, context) {
+      //判断是类数组还是对象，获取索引或者键
+        var keyFinder = isArrayLike(obj) ? _.findIndex : _.findKey;
+        var key = keyFinder(obj, predicate, context);
+        if (key !== void 0 && key !== -1) return obj[key];
+    };
+
+
+     // 寻找数组或者对象中所有满足条件的元素,并返回数组
+    _.filter = _.select = function(obj, predicate, context) {
+        var results = [];
+        //根据context返回不同的函数，也即是修改this指向而已
+        predicate = cb(predicate, context);
+        _.each(obj, function(value, index, list) {
+          if (predicate(value, index, list)) results.push(value);
+        });
+        return results;
+    };
+
+
+    // 查找数组中所有不满足条件的，并返回数组
+ 
+    _.reject = function(obj, predicate, context) {
+        return _.filter(obj, _.negate(cb(predicate)), context);
+    };
+
+ 
+    //数组或者对象所有满足条件的返回true，只要一个不满足条件，返回false
+    _.every = _.all = function(obj, predicate, context) {
+        predicate = cb(predicate, context);
+        var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+        for (var index = 0; index < length; index++) {
+            var currentKey = keys ? keys[index] : index;
+            if (!predicate(obj[currentKey], currentKey, obj)) return false;
+        }
+        return true;
+    };
+
+
+    //数组或者对象只要一个满足条件就返回true，否则返回false
+     _.some = _.any = function(obj, predicate, context) {
+        predicate = cb(predicate, context);
+        var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+        for (var index = 0; index < length; index++) {
+            var currentKey = keys ? keys[index] : index;
+            if (predicate(obj[currentKey], currentKey, obj)) return true;
+        }
+        return false;
+    };
+
+
+    //数组或者对象中是否含有某个指定元素
+     _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
+        //如果是
+        if (!isArrayLike(obj)) obj = _.values(obj);
+        if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+        return _.indexOf(obj, item, fromIndex) >= 0;
+    };
           
 }());
