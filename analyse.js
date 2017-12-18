@@ -327,8 +327,111 @@
      _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
         //如果是
         if (!isArrayLike(obj)) obj = _.values(obj);
+        // fromIndex 表示查询起始位置
+        // 如果没有指定该参数，则默认从头找起
         if (typeof fromIndex != 'number' || guard) fromIndex = 0;
         return _.indexOf(obj, item, fromIndex) >= 0;
     };
+
+
+    _.invoke = restArgs(function(obj, path, args) {
+        var contextPath, func;
+        //如果path是函数
+        if (_.isFunction(path)) {
+            func = path;
+            //如果path是类数组
+        } else if (_.isArray(path)) {
+           //返回数组从0开始到数组长度-1的部分
+            contextPath = path.slice(0, -1);
+            path = path[path.length - 1];
+        }
+        return _.map(obj, function(context) {
+            var method = func;
+            if (!method) {
+                if (contextPath && contextPath.length) {
+                    context = deepGet(context, contextPath);
+                }
+                if (context == null) return void 0;
+                method = context[path];
+            }
+            return method == null ? method : method.apply(context, args);
+        });
+    });
+
+    _.pluck = function(obj, key) {
+        return _.map(obj, _.property(key));
+    };
+
+    //返回列表
+    _.where = function(obj, attrs) {
+        return _.filter(obj, _.matcher(attrs));
+    };
+
+    //返回第一个
+    _.findWhere = function(obj, attrs) {
+        return _.find(obj, _.matcher(attrs));
+    };
+
+     //调用①
+     //var stooges = [{name: 'moe', age: 80}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+     //_.max(stooges, function(stooge){ return stooge.age; })
+
+     //obj是对象或者数组(子元素不是对象)并且iteratee为数字，走第一个，否则走第二个
+     // iteratee ---> 123(数字) 
+     //obj[0] != 'object' 不是数组对象，是对象或者数组(子元素不是对象)
+     _.max = function(obj, iteratee, context) {
+        var result = -Infinity, lastComputed = -Infinity,
+        value, computed;
+        //直接比较数组或者对象键值的大小 ，返回最大的
+        if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object') && obj != null) {
+            obj = isArrayLike(obj) ? obj : _.values(obj);
+            for (var i = 0, length = obj.length; i < length; i++) {
+                value = obj[i];
+                if (value != null && value > result) {
+                    result = value;
+                }
+            }
+        } else {
+           //如果iteratee为函数或者obj为数组对象
+            iteratee = cb(iteratee, context);
+            _.each(obj, function(v, index, list) {
+                computed = iteratee(v, index, list);
+                if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+                    result = v;
+                    lastComputed = computed;
+                }
+            });
+        }
+        return result;
+    };
+
+
+    //同max类似
+    _.min = function(obj, iteratee, context) {
+        var result = Infinity, lastComputed = Infinity,
+        value, computed;
+        if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object') && obj != null) {
+            obj = isArrayLike(obj) ? obj : _.values(obj);
+            for (var i = 0, length = obj.length; i < length; i++) {
+                value = obj[i];
+                if (value != null && value < result) {
+                    result = value;
+                }
+            }
+        } else {
+            iteratee = cb(iteratee, context);
+            _.each(obj, function(v, index, list) {
+                computed = iteratee(v, index, list);
+                if (computed < lastComputed || computed === Infinity && result === Infinity) {
+                    result = v;
+                    lastComputed = computed;
+                }
+             });
+        }
+        return result;
+    };
+
           
 }());
+
+
