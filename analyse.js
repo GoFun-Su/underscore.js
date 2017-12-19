@@ -431,6 +431,38 @@
         return result;
     };
 
+
+    _.shuffle = function(obj) {
+        return _.sample(obj, Infinity);
+    };
+    
+    _.sample = function(obj, n, guard) {
+      //如果n等于null,或者guard存在
+        if (n == null || guard) {
+          //如果obj是对象，获取键值组成的数组
+            if (!isArrayLike(obj)) obj = _.values(obj);
+          //_.random(obj.length - 1)为数组长度减一，返回数组中随机一个数
+            return obj[_.random(obj.length - 1)];
+        }
+        //如果是类数组或者对象
+        var sample = isArrayLike(obj) ? _.clone(obj) : _.values(obj);
+        //获取长度
+        var length = getLength(sample);
+        //Math.min(n, length),获取n和length的最小值
+        n = Math.max(Math.min(n, length), 0);
+        var last = length - 1;
+        for (var index = 0; index < n; index++) {
+            //rand为index-last其中的一个数
+            var rand = _.random(index, last);
+            //交换位置
+            var temp = sample[index];
+            sample[index] = sample[rand];
+            sample[rand] = temp;
+        }
+        //返回前n个数
+        return sample.slice(0, n);
+    };
+
           
 }());
 
