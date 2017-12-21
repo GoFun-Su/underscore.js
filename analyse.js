@@ -436,6 +436,8 @@
         return _.sample(obj, Infinity);
     };
     
+    //随机返回数组前n个数
+    //如果参数是对象，则数组由 values 组成
     _.sample = function(obj, n, guard) {
       //如果n等于null,或者guard存在
         if (n == null || guard) {
@@ -461,6 +463,38 @@
         }
         //返回前n个数
         return sample.slice(0, n);
+    };
+
+    //排序
+    //如果是iteratee是函数的话，函数作为条件进行排序
+    //iteratee = cb(iteratee, context);还是原来的函数，不变
+    //_.map(obj, function(value, key, list) {})函数 返回的是一个重新组合的对象，function作为一个回调函数
+    //.sort函数是对对象进行排序，然后_.pluck返回key对应value的数组
+    //如果iteratee是字符串的话，或者value值进行排序 
+    //iteratee = cb(iteratee, context);对于是字符串的时候
+    //var cb = function(value, context, argCount) {value是字符串 eturn _.property(value);};
+
+    //_.property = function(path) {path不是类数组 if (!_.isArray(path)) {return shallowProperty(path);}};
+    //var shallowProperty = function(key) {  return function(obj) {return obj == null ? void 0 : obj[key];};};
+    //最后iteratee = function(key) {  return function(obj) {return obj == null ? void 0 : obj[key];};}获取的是value值
+     _.sortBy = function(obj, iteratee, context) {
+        var index = 0;
+        iteratee = cb(iteratee, context);
+        return _.pluck(_.map(obj, function(value, key, list) {
+            return {
+                value: value,
+                index: index++,
+                criteria: iteratee(value, key, list)
+            };
+        }).sort(function(left, right) {
+              var a = left.criteria;
+              var b = right.criteria;
+              if (a !== b) {
+                  if (a > b || a === void 0) return 1;
+                  if (a < b || b === void 0) return -1;
+              }
+              return left.index - right.index;
+        }), 'value');
     };
 
           
