@@ -548,8 +548,45 @@
     //_.groupBy([1.3, 2.1, 2.4], function(num){ return Math.floor(num); });
     //=> {1: [1.3], 2: [2.1, 2.4]}
 
-    //_.groupBy(['one', 'two', 'three'], 'length');
-    //=> {3: ["one", "two"], 5: ["three"]}
+    
+    _.indexBy = group(
+        function(result, value, key) {
+           //result返回的是一个对象，key-value形式
+            result[key] = value;
+        }
+    );
+    /*var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+    _.indexBy(stooges, 'age');
+    => {
+     "40": {name: 'moe', age: 40},
+     "50": {name: 'larry', age: 50},
+     "60": {name: 'curly', age: 60}
+    var group = function(behavior, partition) {
+        return function(obj, iteratee, context) {
+          var result = partition ? [[], []] : {};
+          iteratee = cb(iteratee, context);
+          
+          //iteratee -- >function(obj) {return obj == null ? void 0 : obj[iteratee];};
+          _.each(obj, function(value, index) {
+            //此时的key为age的value值
+            var key = iteratee(value, index, obj);
+            behavior(result, value, key);
+          });
+          return result;
+        };
+    };*/
+
+
+    _.countBy = group(function(result, value, key) {
+      //由前面两个函数可知，这个回调函数是返回的参数的形式，返回的是一个对象，
+      //如果存在这个属性，value值加一，否则对象中添加这个属性
+        if (_.has(result, key)) result[key]++; else result[key] = 1;
+    });
+    /* _.countBy([1, 2, 3, 4, 5], function(num) {
+        return num % 2 == 0 ? 'even': 'odd';
+    });
+    => {odd: 3, even: 2}*/
+}
           
 }());
 
