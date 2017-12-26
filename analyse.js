@@ -497,6 +497,59 @@
         }), 'value');
     };
 
+   
+    //如果iteratee不是函数是字符的时候
+//var cb = function(value, context, argCount) {return _.property(value);}
+//_.property = function(path) {
+   // if (!_.isArray(path)) {
+    //  return shallowProperty(path);
+    //}
+  //};
+ //var shallowProperty = function(key) {
+  //return function(obj) {
+  //   return obj == null ? void 0 : obj[key];
+  //};
+//};
+//iteratee -->function(obj) {return obj == null ? void 0 : obj[iteratee];};
+var group = function(behavior, partition) {
+    return function(obj, iteratee, context) {
+      //partition不存在为空对象
+        var result = partition ? [[], []] : {};
+        //改变this指向  
+        //如果iteratee不是函数是字符的时候
+        //iteratee -->function(obj) {return obj == null ? void 0 : obj[iteratee];};
+        iteratee = cb(iteratee, context);
+        //循环obj
+        _.each(obj, function(value, index) {
+          //执行iteratee函数，获取key值
+          //如果iteratee不是函数是字符的时候,
+          //iteratee （此时的obj不再是传入的对象，是value）-->function(obj) {return obj == null ? void 0 : obj[iteratee];};
+          //var key = iteratee(value) -->获取的是value的长度，以长度分组
+        var key = iteratee(value, index, obj);
+          //执行最外层的函数
+        behavior(result, value, key);
+      });
+        //返回结果
+      return result;
+    };
+    _.groupBy = group(
+        //var group = function(behavior, partition) {}
+        //以下函数为behavior参数，partition不存在
+        function(result, value, key) {
+          //如果结果里面含有key，将数字push为key的数组中
+            if (_.has(result, key)) result[key].push(value); 
+          //否则result中添加属性key，设置key-value
+            else result[key] = [value];
+          }
+      );
+    };
+    //_.groupBy 返回的是function(obj, iteratee, context) {...}
+
+    //_.groupBy([1.3, 2.1, 2.4], function(num){ return Math.floor(num); });
+    //=> {1: [1.3], 2: [2.1, 2.4]}
+
+    //_.groupBy(['one', 'two', 'three'], 'length');
+    //=> {3: ["one", "two"], 5: ["three"]}
           
 }());
 
