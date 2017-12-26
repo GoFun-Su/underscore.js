@@ -55,7 +55,7 @@
             	this._wrapped = obj;
       	  };
 
-      	// 针对不同的宿主环境, 将Undersocre的命名变量存放到不同的对象中
+    // 针对不同的宿主环境, 将Undersocre的命名变量存放到不同的对象中
   	if (typeof exports != 'undefined' && !exports.nodeType) {// Node.js环境
     		if (typeof module != 'undefined' && !module.nodeType && module.exports) {
       			exports = module.exports = _;
@@ -78,9 +78,9 @@
     //var cb = optimizeCb(name,undefined,null);调用，返回return function(){...}
     //cb(arguments参数:value,index,collection等等) 调用
     var optimizeCb = function(func, context, argCount) {
-   	 	if (context === void 0) return func;
-             //如果函数的上下文环境指向window,返回函数，
-             //根据argCount数值的不同，返回不同的函数，参数的个数不一样
+   	 	  if (context === void 0) return func;
+        //如果函数的上下文环境指向window,返回函数，
+        //根据argCount数值的不同，返回不同的函数，参数的个数不一样
     		switch (argCount) {
       			case 1: return function(value) {
         					return func.call(context, value);
@@ -260,13 +260,13 @@
     };
 
     _.reduce = _.foldl = _.inject = createReduce(1);、
-      //_.reduce返回的是function(obj, iteratee, memo, context) {var initial = arguments.length >= 3; 
-      //return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial); };这个函数
+    //_.reduce返回的是function(obj, iteratee, memo, context) {var initial = arguments.length >= 3; 
+    //return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial); };这个函数
     //调用
     //var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
     //相当于从左到右相加1,3,6
     _.reduceRight = _.foldr = createReduce(-1);
-     //var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
+    //var sum = _.reduce([1, 2, 3], function(memo, num){ return memo + num; }, 0);
     //相当于从右向左相加，3,5,6
 
     //返回查找的第一个正确的值
@@ -278,7 +278,7 @@
     };
 
 
-     // 寻找数组或者对象中所有满足条件的元素,并返回数组
+    // 寻找数组或者对象中所有满足条件的元素,并返回数组
     _.filter = _.select = function(obj, predicate, context) {
         var results = [];
         //根据context返回不同的函数，也即是修改this指向而已
@@ -372,14 +372,14 @@
         return _.find(obj, _.matcher(attrs));
     };
 
-     //调用①
-     //var stooges = [{name: 'moe', age: 80}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
-     //_.max(stooges, function(stooge){ return stooge.age; })
+    //调用①
+    //var stooges = [{name: 'moe', age: 80}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+    //_.max(stooges, function(stooge){ return stooge.age; })
 
-     //obj是对象或者数组(子元素不是对象)并且iteratee为数字，走第一个，否则走第二个
-     // iteratee ---> 123(数字) 
-     //obj[0] != 'object' 不是数组对象，是对象或者数组(子元素不是对象)
-     _.max = function(obj, iteratee, context) {
+    //obj是对象或者数组(子元素不是对象)并且iteratee为数字，走第一个，否则走第二个
+    // iteratee ---> 123(数字) 
+    //obj[0] != 'object' 不是数组对象，是对象或者数组(子元素不是对象)
+    _.max = function(obj, iteratee, context) {
         var result = -Infinity, lastComputed = -Infinity,
         value, computed;
         //直接比较数组或者对象键值的大小 ，返回最大的
@@ -392,7 +392,7 @@
                 }
             }
         } else {
-           //如果iteratee为函数或者obj为数组对象
+            //如果iteratee为函数或者obj为数组对象
             iteratee = cb(iteratee, context);
             _.each(obj, function(v, index, list) {
                 computed = iteratee(v, index, list);
@@ -477,7 +477,7 @@
     //_.property = function(path) {path不是类数组 if (!_.isArray(path)) {return shallowProperty(path);}};
     //var shallowProperty = function(key) {  return function(obj) {return obj == null ? void 0 : obj[key];};};
     //最后iteratee = function(key) {  return function(obj) {return obj == null ? void 0 : obj[key];};}获取的是value值
-     _.sortBy = function(obj, iteratee, context) {
+    _.sortBy = function(obj, iteratee, context) {
         var index = 0;
         iteratee = cb(iteratee, context);
         return _.pluck(_.map(obj, function(value, key, list) {
