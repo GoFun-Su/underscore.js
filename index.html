@@ -190,8 +190,22 @@
      _.reduce = createReduce(-1);
      var list = [[0, 1], [2, 3], [4, 5]];
 	var flat = _.reduce(list, function(a, b) { return a.concat(b); }, []);*/
-	
-  
+	var group = function(behavior, partition) {
+        return function(obj, iteratee, context) {
+            var result = partition ? [[], []] : {};
+            iteratee = cb(iteratee, context);
+            _.each(obj, function(value, index) {
+            var key = iteratee(value, index, obj);
+              //执行最外层的函数
+            behavior(result, value, key);
+          });
+          return result;
+        };
+	_.partition = group(function(result, value, pass) {
+        result[pass ? 0 : 1].push(value);
+    }, true);
+  _.partition([0, 1, 2, 3, 4, 5], isOdd);
+
    
 </script>
 </html>

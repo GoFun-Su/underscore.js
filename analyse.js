@@ -586,7 +586,35 @@
         return num % 2 == 0 ? 'even': 'odd';
     });
     => {odd: 3, even: 2}*/
-}
+
+
+    //UTF-16 编码  编码法在 UCS-2 第0位面字符集的基础上利用 D800-DFFF 区段的码位通过一定转换方式
+    //将超出2字节的字符编码为一对16比特长的码元(即32bit,4Bytes)，称作代理码对 (surrogate pair)
+    var reStrSymbol = /[^\ud800-\udfff]|[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g;
+
+     _.toArray = function(obj) {
+        if (!obj) return [];
+        //如果是数组，
+        if (_.isArray(obj)) return slice.call(obj);
+        if (_.isString(obj)) {
+            return obj.match(reStrSymbol);
+        }
+        if (isArrayLike(obj)) return _.map(obj, _.identity);
+         return _.values(obj);
+    };
+
+
+    _.size = function(obj) {
+        if (obj == null) return 0;
+        //如果是类数组返回类属租的长度，如果是对象返回属性的个数
+        return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+    };
+
+    //返回一个数组，只存在0或者1
+    _.partition = group(function(result, value, pass) {
+        result[pass ? 0 : 1].push(value);
+    }, true);
+
           
 }());
 
