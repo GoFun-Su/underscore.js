@@ -614,7 +614,35 @@
     _.partition = group(function(result, value, pass) {
         result[pass ? 0 : 1].push(value);
     }, true);
+    //_.partition([0, 1, 2, 3, 4, 5], function(num){return num>2});
+    //[[0,1,2],[3,4,5]]
 
+    //如果存在guard不为0返回数组的第一个元素，否则如果存在n返回数组的前n个
+    _.first = _.head = _.take = function(array, n, guard) {
+      if (array == null || array.length < 1) return void 0;
+      //返回数组的第一个元素
+      if (n == null || guard) return array[0];
+      //返回长度为n的数组
+      return _.initial(array, array.length - n);
+    };
+
+    //在arguments对象上特别有用？？
+    _.initial = function(array, n, guard) {
+        //如果guard不为0存在存在，返回数组的前array.length-1个，如果不存在n存在，返回array.length-n个
+        return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
+    };
+
+
+    //如果存在guard不为0返回数组的最后一个元素，否则如果存在n返回数组的后n个,n为返回的的个数
+    _.last = function(array, n, guard) {
+        if (array == null || array.length < 1) return void 0;
+        if (n == null || guard) return array[array.length - 1];
+        return _.rest(array, Math.max(0, array.length - n));
+    };
+
+    _.rest = _.tail = _.drop = function(array, n, guard) {
+      return slice.call(array, n == null || guard ? 1 : n);
+    };
           
 }());
 
