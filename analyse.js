@@ -676,7 +676,13 @@
       //shallow为true的时候，数组n层,剥开第n层,获取n层里面的内容，shallow为false的时候，返回数组仅仅只有一层无论外层还是元素内层
     _.flatten = function(array, shallow) {
         return flatten(array, shallow, false);
-      };
+    };
+
+    //返回数组，不包含某些元素
+    _.without = restArgs(function(array, otherArrays) {
+        return _.difference(array, otherArrays);
+    });
+
           
 }());
 
