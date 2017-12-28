@@ -643,6 +643,40 @@
     _.rest = _.tail = _.drop = function(array, n, guard) {
       return slice.call(array, n == null || guard ? 1 : n);
     };
+
+    //返回转换成布尔值为true的值组合成的数组
+    _.compact = function(array) {
+        return _.filter(array, Boolean);
+    };
+
+    var flatten = function(input, shallow, strict, output) {
+        output = output || [];
+        var idx = output.length;
+        for (var i = 0, length = getLength(input); i < length; i++) {
+          var value = input[i];
+          //如果是数组,直接返回数组里面的内容
+          if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
+            //shallow为true的时候，获取n层里面的内容
+            if (shallow) {
+              var j = 0, len = value.length;
+              while (j < len) output[idx++] = value[j++];
+            } else {
+              console.log(_.flatten([1, [2], [3, [[4]]]], false))
+              //否则的话，返回数组仅仅只有一层无论外层还是元素内层
+              flatten(value, shallow, strict, output);
+              idx = output.length;
+            }
+          } else if (!strict) {
+            output[idx++] = value;
+          }
+        }
+        return output;
+      }
+
+      //shallow为true的时候，数组n层,剥开第n层,获取n层里面的内容，shallow为false的时候，返回数组仅仅只有一层无论外层还是元素内层
+    _.flatten = function(array, shallow) {
+        return flatten(array, shallow, false);
+      };
           
 }());
 

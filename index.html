@@ -30,7 +30,14 @@
 
 <script type="text/javascript" src="index.js"></script>
 <script type="text/javascript">
-	console.log(_.first([5, 4, 3, 2, 1],3));
+	/* var cb = function(value, context, argCount) {
+    if (_.iteratee !== builtinIteratee) return _.iteratee(value, context);
+    if (value == null) return _.identity;
+    if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+    if (_.isObject(value) && !_.isArray(value)) return _.matcher(value);
+    return _.property(value);
+  };*/
+	console.log(_.flatten([1, [2], [3, [[4]]]], true));
 	/*function Person (name){
 		this.name = name;
 	}
