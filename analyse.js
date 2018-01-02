@@ -683,7 +683,58 @@
         return _.difference(array, otherArrays);
     });
 
-          
+    //如果isSorted等于false，iteratee不存在进行数组去重
+    //如果isSorted等于true，输出数组，不进行过滤
+    //如果isSorted不是布尔值，isSorted = false，iteratee等于isSorted，
+    //iteratee = cb(iteratee, context)-->function(obj) { return obj == null ? void 0 : obj[key];};
+    //computed一直等于undefined，所以返回数组只存在一个值，array[0]-->1
+    //如果是布尔值并且iteratee存在,iteratee每次调用之后的返回值等于computed，如果新的数组不存在就push否则不push
+    //_.uniq([1, 2, 1, 4, 1, 3],false,function(value){ return value})
+    _.uniq = _.unique = function(array, isSorted, iteratee, context) {
+            //如果isSorted不是布尔值true或者false
+            //context= iteratee(存在值或者 undefined),iteratee=isSorted,isSorted = false
+            //如果是布尔值
+            ////context= context,iteratee=iteratee,isSorted = isSorted
+            if (!_.isBoolean(isSorted)) {
+                    context = iteratee;
+                    iteratee = isSorted;
+                    isSorted = false;
+            }
+             //如果iteratee存在
+            if (iteratee != null) iteratee = cb(iteratee, context);
+            var result = [];
+            var seen = [];
+            for (var i = 0, length = getLength(array); i < length; i++) {
+                    var value = array[i],
+                    //如果iteratee不存在，computed是数组每个元素的值
+                    computed = iteratee ? iteratee(value, i, array) : value;
+                    //如果isSorted传参不是布尔值的情况下，isSorted等于false,
+                    //如果isSorted传参是true走第一步
+                    //if (!i || seen !== computed)数组比较相等永远是不相等的，判断有问题？去重
+                    if (isSorted) {
+                            if (!i || seen !== computed) result.push(value);
+                            seen = computed;
+                    } else if (iteratee) {
+                            ////如果isSorted传参不是布尔值的情况下，isSorted等于false,iteratee不等于null
+                                if (!_.contains(seen, computed)) {
+                                        seen.push(computed);
+                                        result.push(value);
+                                }
+                        //如果isSorted传参是布尔值的情况下，isSorted传参是false,
+                        //如果iteratee不存在，数组去重
+                        } else if (!_.contains(result, value)) {
+                                result.push(value);
+                        }
+            }
+            return result;
+    };
+
+     _.union = restArgs(function(arrays) {
+           //flatten(arrays, true, true)第二个参数为true的时候，数组n层,剥开第n层,获取n层里面的内容
+            return _.uniq(flatten(arrays, true, true));
+    });
+
+              
 }());
 
 
