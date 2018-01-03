@@ -798,6 +798,41 @@
             }
             return result;
     };
+
+
+    //dir为1或者-1
+    //  var users = [1,2,3,2];_.findLastIndex(users, function(value,index,arr){return value==2});
+    var createPredicateIndexFinder = function(dir) {
+            return function(array, predicate, context) {
+                    predicate = cb(predicate, context);
+                    var length = getLength(array);
+                    //dir为1的时候index为0,dir为-1的时候index为length - 1，
+                    //即是搜索从左还是从右开始，返回当前找到的索引,未找到返回-1
+                    var index = dir > 0 ? 0 : length - 1;
+                    for (; index >= 0 && index < length; index += dir) {
+                            //依次循环执行predicate函数,找出匹配predicate函数的值，并返回索引
+                            if (predicate(array[index], index, array)) return index;
+                    }
+                    return -1;
+            };
+    };
+
+    //匹配的第一个索引
+     _.findIndex = createPredicateIndexFinder(1);
+    //匹配的最后一个索引
+    _.findLastIndex = createPredicateIndexFinder(-1);
+
+
+    _.sortedIndex = function(array, obj, iteratee, context) {
+            iteratee = cb(iteratee, context, 1);
+            var value = iteratee(obj);
+            var low = 0, high = getLength(array);
+            while (low < high) {
+                    var mid = Math.floor((low + high) / 2);
+                    if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
+            }
+            return low;
+    };
               
 }());
 
