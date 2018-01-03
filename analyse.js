@@ -734,6 +734,70 @@
             return _.uniq(flatten(arrays, true, true));
     });
 
+    //_.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1])
+    //break 语句可用于跳出本层循环。break语句跳出本层循环后，会继续执行该层循环之后的代码（如果有的话）
+    //continue 语句中断本次循环，本次循环之后的内容不再执行，继续下次循环
+    //寻找数组之中公共的元素，重新组成一个新的数组
+    _.intersection = function(array) {
+            //array仅接受第一个实参
+            var result = [];
+            //获取实参的个数，arguments.length代表的是实参的个数
+            var argsLength = arguments.length; 
+            for (var i = 0, length = getLength(array); i < length; i++) {
+                var item = array[i];
+                //获取第一个实参的第一个元素，如果新数组含有当前元素的话，继续下一次i++循环
+                if (_.contains(result, item)) continue;
+                var j;
+                for (j = 1; j < argsLength; j++) {
+                    //如果其他的不含这个元素的话，跳出本层循环，执行下面的代码
+                    if (!_.contains(arguments[j], item)) break;
+                }
+                //如果都包含，result push进去item
+                if (j === argsLength) result.push(item);
+            }
+            return result;
+    };
+
+
+     _.difference = restArgs(function(array, rest) {
+            rest = flatten(rest, true, true);
+            return _.filter(array, function(value){
+                    return !_.contains(rest, value);
+            });
+    });
+
+     //_.unzip([["moe", 1,30, true], ["larry",2, 40, false], ["curly",3, 50, false]])
+     _.unzip = function(array) {
+            //getLength-->ƒ (obj) {return obj == null ? void 0 : obj[key]; }-->obj[key]=obj["length"]
+            //获取数组里面每个元素的最大长度
+            var length = array && _.max(array, getLength).length || 0;
+            //根据length生成长度为length的数组
+            var result = Array(length);
+            //每一个元素的相同的索引值组成一个新的数组
+            for (var index = 0; index < length; index++) {
+                    result[index] = _.pluck(array, index);
+            }
+            return result;
+    };
+
+    //_.unzip行程的结果，组成一个新的数组
+     _.zip = restArgs(_.unzip);
+
+     //转换成对象形式
+     //_.object([['moe', 30], ['larry', 40], ['curly', 50]])
+     _.object = function(list, values) {
+            var result = {};
+            for (var i = 0, length = getLength(list); i < length; i++) {
+                    //如果values存在，组成对象key-value形式，list[i]对应key,values[i]对应value
+                    if (values) {
+                            result[list[i]] = values[i];
+                    } else {
+                        //如果不存在value,list[i]第一个元素是key,第二个元素是value，
+                            result[list[i][0]] = list[i][1];
+                    }
+            }
+            return result;
+    };
               
 }());
 
