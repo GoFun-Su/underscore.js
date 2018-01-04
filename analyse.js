@@ -823,16 +823,69 @@
     _.findLastIndex = createPredicateIndexFinder(-1);
 
 
+    //cb(iteratee, context, 1)
+    //对于已经排好序的进行查找
+    //二分查找
     _.sortedIndex = function(array, obj, iteratee, context) {
             iteratee = cb(iteratee, context, 1);
+
+            //iteratee==value
+            //iteratee是函数的时候
+            //cb(iteratee, context, 1)--->return optimizeCb(iteratee, context, argCount);
+            //iteratee=-->return function(value) {return iteratee.call(context, value);};    
             var value = iteratee(obj);
             var low = 0, high = getLength(array);
             while (low < high) {
+                    //Math.floor向下取整
+                     //获取low和high中间数
                     var mid = Math.floor((low + high) / 2);
+                    //如果小于比较的值，下一个进行比较
                     if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
             }
             return low;
     };
+
+
+    //dir为1或者-1
+    //为1从头开始，为-1从尾开始
+    //array要查找的数组，item要比较的数组,idx为要开始比较的索引
+
+    var createIndexFinder = function(dir, predicateFind, sortedIndex) {
+            return function(array, item, idx) {
+                    var i = 0, length = getLength(array);
+                    //如果idx为数字，即初始比较位存在
+                    if (typeof idx == 'number') {
+                            //如果dir大于0，从头开始比较,
+                            if (dir > 0) {
+                                    //如果idx大于0，即是从idx位开始，否则从正着数第idx+length位开始，即是length-|idx|位开始比较
+                                    i = idx >= 0 ? idx : Math.max(idx + length, i);
+                            } else {
+                                    //从尾开始比较，如果idx大于0，从倒着数第idx+1位开始向前比较（长度即为idx=1），
+                                    //否则小于0的时候，从length-|idx|+1位向前比较(长度为length-|idx|+1)
+                                    length = idx >= 0 ? Math.min(idx + 1, length) : idx + length + 1;
+                            }
+                    } else if (sortedIndex && idx && length) {
+                            idx = sortedIndex(array, item);
+                           // sortedIndex(array, item)-->iteratee--->ƒ (value) {return value; }
+                           //-->var value = iteratee(obj)(obj==item调用)返回的是item;最后二分查找返回索引-->idx;
+                           //根据返回的值进行比较是否正确
+                            return array[idx] === item ? idx : -1;
+                    }
+                    if (item !== item) {
+                            idx = predicateFind(slice.call(array, i, length), _.isNaN);
+                            return idx >= 0 ? idx + i : -1;
+                    }
+                    //找到某个比较相等的值，返回索引
+                    //idx从0或者 从0或者从尾开始
+                    for (idx = dir > 0 ? i : length - 1; idx >= 0 && idx < length; idx += dir) {
+                            if (array[idx] === item) return idx;
+                    }
+                    return -1;
+            };
+    };
+
+    _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+    _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
               
 }());
 

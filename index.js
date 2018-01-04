@@ -671,7 +671,9 @@
   // Use a comparator function to figure out the smallest index at which
   // an object should be inserted so as to maintain order. Uses binary search.
   _.sortedIndex = function(array, obj, iteratee, context) {
+
     iteratee = cb(iteratee, context, 1);
+    console.log(iteratee)
     var value = iteratee(obj);
     var low = 0, high = getLength(array);
     while (low < high) {
