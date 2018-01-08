@@ -886,7 +886,51 @@
 
     _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
     _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
-              
+    
+
+    //返回一个数组，如果三个参数都存在 ，返回的是(strat,stop)区间的数，step为间距，差值
+    //如果stop不存在，返回的是0-start之间的值
+    //如果step不存在 ，返回的是start和stop之间的值，step为1或者-1
+    _.range = function(start, stop, step) {
+           //如果stop不存在的情况下，stop等于start或者0，start等于0
+            if (stop == null) {
+              stop = start || 0;
+              start = 0;
+            }
+            //如果step不存在的情况下，step等于1或者-1
+            if (!step) {
+              step = stop < start ? -1 : 1;
+            }
+
+            var length = Math.max(Math.ceil((stop - start) / step), 0);
+            var range = Array(length);
+
+            for (var idx = 0; idx < length; idx++, start += step) {
+              range[idx] = start;
+            }
+
+            return range;
+    };
+    //返回新的数组，数组里面每一个元素为数组，长度为count
+    _.chunk = function(array, count) {
+            if (count == null || count < 1) return [];
+
+            var result = [];
+            var i = 0, length = array.length;
+            while (i < length) {
+                //Array.prototype.slice.call([1,2,3,4,3,5,6],1,4)返回新数组，索引下标从1开始到4
+              result.push(slice.call(array, i, i += count));
+            }
+            return result;
+    }; 
+
+    var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
+            if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+            var self = baseCreate(sourceFunc.prototype);
+            var result = sourceFunc.apply(self, args);
+            if (_.isObject(result)) return result;
+            return self;
+    };         
 }());
 
 
