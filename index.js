@@ -110,6 +110,7 @@
   // This accumulates the arguments passed into an array, after a given index.
   var restArgs = function(func, startIndex) {
     startIndex = startIndex == null ? func.length - 1 : +startIndex;
+    console.log(func.length)
     return function() {
       var length = Math.max(arguments.length - startIndex, 0),
           rest = Array(length),

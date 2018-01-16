@@ -41,8 +41,10 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-  
-console.log(_.chunk([0, 2, 3,2,3445], 2));
+  	var func = function(greeting){ return greeting + ': ' + this.name };
+	func = _.bind(func, {name: 'moe'}, 'hi');
+
+func()
 	/*function Person (name){
 		this.name = name;
 	}

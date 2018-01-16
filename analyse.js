@@ -924,13 +924,101 @@
             return result;
     }; 
 
+    //sourceFunc
     var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
+            //如果callingContext不是boundFunc函数的实例
             if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+            //if (nativeCreate) return nativeCreate(prototype);-->Object.create(sourceFunc.prototype)
+            //sourceFunc.prototype是self的原型，self是sourceFunc的实例
+            //var o3 = Object.create(Object.prototype); // o3和{}和new Object()一样,即o3是object的实例
             var self = baseCreate(sourceFunc.prototype);
+            // // 用 new 生成一个构造函数的实例
+            // 正常情况下是没有返回值的，即 result 值为 undefined
+            // 如果构造函数有返回值
+            // 如果返回值是对象（非 null），则 new 的结果返回这个对象
+            // 否则返回实例
+            //function Fn1() {this.name = 'peter';return {name: 'jack'};}var p = new Fn1();console.log(obj1);--> {name: "jack"}
+            //console.log(Fn1.apply(p))--->{name: "jack"}
+            //apply 应用某一对象的一个方法，用另一个对象替换当前对象，继承，调用
             var result = sourceFunc.apply(self, args);
+            //如果返回的是一个对象，代表函数有返回值是一个对象，否则的话，返回的是函数的实例
             if (_.isObject(result)) return result;
             return self;
-    };         
+    }; 
+
+
+
+   
+    /*var callback1 = function(func, context, args) {
+            if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
+            var bound = restArgs(function(callArgs) {
+                    return executeBound(func, bound, context, this, args.concat(callArgs));
+            });
+            return bound;
+ }
+_.bind = restArgs(callback1); ----->restArg函数解析之后
+_.bind = function() {
+        //func.length - 1参数的个数，startIndex为undefined ==null为true
+        //startIndex为2
+        startIndex = startIndex == null ? func.length - 1 : +startIndex;
+        var length = 3,
+        rest = Array(length),
+        index = 0;
+        for (; index < length; index++) {
+          rest[index] = arguments[index + startIndex];
+        } 
+        switch (startIndex) {
+            //startIndex=2
+            case 2: return func.call(this, arguments[0], arguments[1], rest);
+        }
+        
+    };
+
+var func = function(greeting){ return greeting + ': ' + this.name };
+func = _.bind(func, {name: 'moe'}, 'hi'); 
+调用结果:
+--->rest[0]=func,rest[1]={name: 'moe'},rest[2]='hi' 
+--->callback1.call(this, func, {name: 'moe'}, rest);
+-->callback1(func, {name: 'moe'}, rest);
+-->var callback1 = function(func, context, args) {
+            var bound = restArgs(function(callArgs) {
+                    return executeBound(func, bound, context, this, args.concat(callArgs));
+            });
+            return bound;
+ };
+-->callback1(function(greeting){ return greeting + ': ' + this.name };, {name: 'moe'}, rest);
+var callback2=function(callArgs) {
+      return executeBound(function(greeting){ return greeting + ': ' + this.name };, bound, {name: 'moe'}, this, args.concat(callArgs));
+  };
+-->restArgs(callback2);
+ 
+--> function(){
+    func.length =1;startIndex=0;
+ }*/
+
+    _.bind = restArgs(function(func, context, args) {
+            //func必须是函数形式
+            if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
+            var bound = restArgs(function(callArgs) {
+                    return executeBound(func, bound, context, this, args.concat(callArgs));
+            });
+            return bound;
+    });  
+
+
+    _.partial = restArgs(function(func, boundArgs) {
+            var placeholder = _.partial.placeholder;
+            var bound = function() {
+                    var position = 0, length = boundArgs.length;
+                    var args = Array(length);
+                    for (var i = 0; i < length; i++) {
+                            args[i] = boundArgs[i] === placeholder ? arguments[position++] : boundArgs[i];
+                    }
+                    while (position < arguments.length) args.push(arguments[position++]);
+                            return executeBound(func, bound, this, this, args);
+                    };
+                    return bound;
+    });      
 }());
 
 
