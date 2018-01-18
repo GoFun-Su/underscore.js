@@ -949,53 +949,145 @@
 
 
    
-    /*var callback1 = function(func, context, args) {
+   //函数的 length 得到的是形参个数,arguments.length为实参的个数
+    /*var func = function(greeting){ return greeting + ': ' + this.name };
+        func = _.bind(func, {name: 'moe'}, 'hi');
+        func();
+    var callback1 = function(func, context, args) {
             if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
             var bound = restArgs(function(callArgs) {
                     return executeBound(func, bound, context, this, args.concat(callArgs));
             });
             return bound;
- }
-_.bind = restArgs(callback1); ----->restArg函数解析之后
-_.bind = function() {
-        //func.length - 1参数的个数，startIndex为undefined ==null为true
-        //startIndex为2
-        startIndex = startIndex == null ? func.length - 1 : +startIndex;
-        var length = 3,
-        rest = Array(length),
-        index = 0;
-        for (; index < length; index++) {
-          rest[index] = arguments[index + startIndex];
-        } 
-        switch (startIndex) {
-            //startIndex=2
-            case 2: return func.call(this, arguments[0], arguments[1], rest);
-        }
-        
     };
+     _.bind = restArgs(callback1); 
+     var restArgs = function(func, startIndex) {
+            startIndex = startIndex == null ? func.length - 1 : +startIndex;
+            startIndex = 3-1=2;
+            return function() {
+                var length = Math.max(arguments.length - 2, 0),
+                rest = Array(length),
+                index = 0;
+                for (; index < length; index++) {
+                  rest[index] = arguments[index + 2];
+                }
+                switch (2) {
+                    case 2: return callback1.call(this, arguments[0], arguments[1], rest);
+                }
+                
+        };
+     };
+     func = _.bind(func, {name: 'moe'}, 'hi');
+     _.bind = function() {
+                var length = Math.max(3- 2, 0),
+                rest = Array(1),
+                index = 0;
+                for (; index < 1; index++) {
+                  rest[0] = arguments[0 + 2];
+                }
+                switch (2) {
+                    case 2: return callback1(func, {name: 'moe'}, ['hi']);
+                }
+                
+        };; 
+    func = _.bind(func, {name: 'moe'}, ['hi']);
+    //调用成功之后-->
+    callback1(func, {name: 'moe'}, ['hi'])
+    //改个名字
+    bind2(func, {name: 'moe'}, ['hi'])
 
-var func = function(greeting){ return greeting + ': ' + this.name };
-func = _.bind(func, {name: 'moe'}, 'hi'); 
-调用结果:
---->rest[0]=func,rest[1]={name: 'moe'},rest[2]='hi' 
---->callback1.call(this, func, {name: 'moe'}, rest);
--->callback1(func, {name: 'moe'}, rest);
--->var callback1 = function(func, context, args) {
+
+    bind2(func, {name: 'moe'}, ['hi'])
+    var bind2 = function(func, context, args) {
             var bound = restArgs(function(callArgs) {
                     return executeBound(func, bound, context, this, args.concat(callArgs));
             });
             return bound;
- };
--->callback1(function(greeting){ return greeting + ': ' + this.name };, {name: 'moe'}, rest);
-var callback2=function(callArgs) {
-      return executeBound(function(greeting){ return greeting + ': ' + this.name };, bound, {name: 'moe'}, this, args.concat(callArgs));
-  };
--->restArgs(callback2);
- 
---> function(){
-    func.length =1;startIndex=0;
- }*/
-
+    };
+    var callback2 = function(callArgs) {
+            return executeBound(func, bound, {name: 'moe'}, this, ['hi'].concat(callArgs));
+    };
+    bind2(func, {name: 'moe'}, ['hi'])
+    var bind2 = function(func, context, args) {
+            var bound = restArgs(callback2);
+            return bound;
+    };
+    var restArgs = function(func, startIndex) {
+            startIndex = startIndex == null ? func.length - 1 : +startIndex;
+            startIndex = 1-1=0;
+            return function() {
+                var length = Math.max(arguments.length - 0, 0),
+                //生成一个数组，长度为length
+                rest = Array(length),
+                index = 0;
+                for (; index < length; index++) {
+                  rest[index] = arguments[index + 0];
+                }
+                switch (0) {
+                    case 0: return callback2.call(this, rest);
+                }
+            };
+        };
+    bind2(func, {name: 'moe'}, ['hi'])
+    var bind2 = function(func, context, args) {
+            var bound = function() {
+                    var length = Math.max(arguments.length - 0, 0),
+                    rest = Array(length),
+                    index = 0;
+                    for (; index < length; index++) {
+                        rest[index] = arguments[index + 0];
+                    }
+                    
+                    return callback2.call(this, rest);
+                }
+             };
+            return bound;
+    };
+    var p =bind2(func, {name: 'moe'}, ['hi'])
+    var bind2 = function(func, context, args) {
+          return   function() {
+                    var length = Math.max(arguments.length - 0, 0),
+                    rest = Array(length),
+                    index = 0;
+                    for (; index < length; index++) {
+                        rest[index] = arguments[index + 0];
+                    }
+                    
+                    return callback2.call(this, rest);
+                }
+             };
+    };
+    function() {
+        var length = Math.max(arguments.length - 0, 0),
+        rest = Array(length),
+        index = 0;
+        for (; index < length; index++) {
+            rest[index] = arguments[index + 0];
+        }
+        
+        return callback2.call(this, rest);
+    };
+    p();
+    function() {
+        var length = Math.max(0 - 0, 0),
+        rest = Array(0),
+        index = 0;
+        for (; index < length; index++) {
+            rest[index] = arguments[index + 0];
+        }
+        
+        return callback2([]);
+    };
+    -->callback2([])
+    var callback2 = function(callArgs) {
+            return executeBound(func, bound, {name: 'moe'}, this, ['hi']);
+    };
+    -->callback2([])
+    -->func.apply({name: 'moe'}, ['hi'])
+    -->var func = function(greeting){ return greeting + ': ' + this.name };
+    -->func.apply({name: 'moe'}, ['hi'])
+    "hi: moe"
+*/
     _.bind = restArgs(function(func, context, args) {
             //func必须是函数形式
             if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
