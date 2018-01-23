@@ -1110,7 +1110,188 @@
                             return executeBound(func, bound, this, this, args);
                     };
                     return bound;
-    });      
-}());
+        });      
+    }());
+    _.partial.placeholder = _;
+
+    var subtract = function(a, b) { return b - a; };
+    sub5 = _.partial(subtract, 5);
+    sub5(20);
+
+    var callback1 =function(func, boundArgs) {
+            var placeholder = _.partial.placeholder;
+            var bound = function() {
+                    var position = 0, length = boundArgs.length;
+                    var args = Array(length);
+                    for (var i = 0; i < length; i++) {
+                            args[i] = boundArgs[i] === placeholder ? arguments[position++] : boundArgs[i];
+                    }
+                    while (position < arguments.length) args.push(arguments[position++]);
+                            return executeBound(func, bound, this, this, args);
+                    };
+                    return bound;
+    };
+    _.partial = restArgs(callback1());
+    var restArgs = function(func, startIndex) {
+        startIndex = startIndex == null ? func.length - 1 : +startIndex;
+        startIndex = 2-1=1;
+        return function() {
+            var length = Math.max(arguments.length - 1, 0),
+            rest = Array(length),
+            index = 0;
+            for (; index < length; index++) {
+                    rest[index] = arguments[index + 1];
+            }
+            switch (1) {
+                    case 1: return callback1.call(window, arguments[0], rest);
+            }
+        };
+    };
+    _.partial = function() {
+            var length = Math.max(arguments.length - 1, 0),
+            rest = Array(length),
+            index = 0;
+            for (; index < length; index++) {
+                    rest[index] = arguments[index + 1];
+            }
+            switch (1) {
+                    case 1: return callback1.call(window, arguments[0], rest);
+            }
+        };
+  -->_.partial(subtract, 5);
+  -->
+  _.partial = function() {
+   var length = Math.max(2 - 1, 0),
+    rest = Array(1),
+    index = 0;
+    for (; index < 1; index++) {
+            rest[0] = arguments[0 + 1];
+    }
+    switch (1) {
+            case 1: return callback1.call(window,subtract, [5]);
+    }
+};
+-->_.partial(subtract, 5);
+-->callback1.call(window,subtract, [5])
+-->callback1(subtract, [5])
+-->
+var callback1 =function(func, boundArgs) {
+        var placeholder = _.partial.placeholder;
+        var bound = function() {
+                var position = 0, length =1;
+                var args = Array(1);
+                for (var i = 0; i < 1; i++) {
+                        args[0] =  boundArgs[0];
+                }
+                while (position < arguments.length) args.push(arguments[position++]);
+                        return executeBound(subtract, bound, this, this, [5]);
+            };
+            return bound;
+};
+-->var p = callback1(subtract, [5])
+-->function() {
+    var position = 0, length =1;
+    var args = Array(1);
+    for (var i = 0; i < 1; i++) {
+            args[0] =  boundArgs[0];
+    }
+    while (position < arguments.length) args.push(arguments[position++]);
+            return executeBound(subtract, bound, this, this, [5]);
+ };
+ p(20)
+ -->function() {
+    var position = 0, length =1;
+    var args = Array(1);
+    for (var i = 0; i < 1; i++) {
+            args[0] =  boundArgs[0];
+    }
+    while (position < 1) args.push(arguments[position++]);//args[5,20]
+            return executeBound(subtract, bound, this, this, [5,20]);
+ };
+ -->executeBound(subtract, bound, this, this, [5,20])
+ -->subtract.apply(this, [5,20])
+ //apply参数是一个数组
+ -->var subtract = function(a, b) { return b - a; };
 
 
+
+ subFrom20 = _.partial(subtract, _, 20);
+ subFrom20(5);
+ var callback1 =function(func, boundArgs) {
+        var placeholder = _.partial.placeholder;
+        var bound = function() {
+                var position = 0, length = boundArgs.length;
+                var args = Array(length);
+                for (var i = 0; i < length; i++) {
+                        args[i] = boundArgs[i] === placeholder ? arguments[position++] : boundArgs[i];
+                }
+                while (position < arguments.length) args.push(arguments[position++]);
+                        return executeBound(func, bound, this, this, args);
+                };
+                return bound;
+};
+_.partial = restArgs(callback1());
+var restArgs = function(func, startIndex) {
+    startIndex = startIndex == null ? func.length - 1 : +startIndex;
+    startIndex = 2-1=1;
+    return function() {
+        var length = Math.max(arguments.length - 1, 0),
+        rest = Array(length),
+        index = 0;
+        for (; index < length; index++) {
+                rest[index] = arguments[index + 1];
+        }
+        switch (1) {
+                case 1: return callback1.call(window, arguments[0], rest);
+        }
+    };
+};
+_.partial =function() {
+        var length = Math.max(arguments.length - 1, 0),
+        rest = Array(length),
+        index = 0;
+        for (; index < length; index++) {
+                rest[index] = arguments[index + 1];
+        }
+        switch (1) {
+                case 1: return callback1.call(window, arguments[0], rest);
+        }
+};
+-->_.partial(subtract, _, 20);
+--> 
+_.partial =function() {
+        var length = Math.max(3 - 1, 0),
+        rest = Array(2),
+        index = 0;
+        for (; index < 2; index++) {
+                rest[index] = arguments[index + 1]; //rest [_,20]
+        }
+        switch (1) {
+                case 1: return callback1(subtract, [_,20]);
+        }
+};
+-->_.partial(subtract, _, 20); 
+-->var p = callback1(subtract, [_,20])
+-->var callback1 =function(func, boundArgs) {
+        var placeholder = _;
+        var bound = function() {
+                var position = 0, length = 2;
+                var args = Array(2);
+                for (var i = 0; i < 2; i++) {
+                        args[i] = boundArgs[i] === placeholder ? arguments[position++] : boundArgs[i];
+                }//args [arguments[0],20]
+                while (position < arguments.length) args.push(arguments[position++]);
+                        return executeBound(subtract, bound, this, this, args);
+                };
+        return bound;
+};
+p(5)
+-->function() {
+    var position = 0, length =2;
+    var args = Array(2);
+    //args [arguments[0],20]
+    //-->args [5,20]
+    return executeBound(subtract, bound, this, this, args);
+}
+-->executeBound(subtract, bound, this, this, [5,20])
+-->subtract.apply(this,[5,20])

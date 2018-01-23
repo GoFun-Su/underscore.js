@@ -788,6 +788,7 @@
         args[i] = boundArgs[i] === placeholder ? arguments[position++] : boundArgs[i];
       }
       while (position < arguments.length) args.push(arguments[position++]);
+
       return executeBound(func, bound, this, this, args);
     };
     return bound;
