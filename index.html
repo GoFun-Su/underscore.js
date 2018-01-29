@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 	<title>Document</title>
 	<style type="text/css">
 		.share-list{
@@ -26,6 +27,7 @@
     <li class="gap"></li>
     <li class="share-item"></li>
     <li class="gap"></li>
+    <li id="underscore_button">bunnn</li>
 </ul>
 
 <script type="text/javascript" src="index.js"></script>
@@ -41,10 +43,13 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-  	var subtract = function(a, b) { return b - a; };
-subFrom20 = _.partial(subtract, _, 20);
-subFrom20(5);
-console.log(subFrom20(5))
+   var buttonView = {
+  		label  : 'underscore',
+  		onClick: function(){ alert('clicked: ' + this.label); },
+  		onHover: function(){ console.log('hovering: ' + this.label); }};
+_.bindAll(buttonView, 'onClick', 'onHover');
+document.getElementById("underscore_button").onclick = buttonView.onClick
+
 	/*function Person (name){
 		this.name = name;
 	}

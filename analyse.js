@@ -1114,7 +1114,7 @@
     }());
     _.partial.placeholder = _;
 
-    var subtract = function(a, b) { return b - a; };
+    /*var subtract = function(a, b) { return b - a; };
     sub5 = _.partial(subtract, 5);
     sub5(20);
 
@@ -1294,4 +1294,72 @@ p(5)
     return executeBound(subtract, bound, this, this, args);
 }
 -->executeBound(subtract, bound, this, this, [5,20])
--->subtract.apply(this,[5,20])
+-->subtract.apply(this,[5,20])*/
+
+
+ _.bindAll = restArgs(function(obj, keys) {
+    keys = flatten(keys, false, false);
+    var index = keys.length;
+    if (index < 1) throw new Error('bindAll must be passed function names');
+    while (index--) {
+      var key = keys[index];
+      obj[key] = _.bind(obj[key], obj);
+    }
+});
+ /*callback = function(obj, keys) {
+    keys = flatten(keys, false, false);
+    var index = keys.length;
+    if (index < 1) throw new Error('bindAll must be passed function names');
+    while (index--) {
+      var key = keys[index];
+      obj[key] = _.bind(obj[key], obj);
+    }
+};
+ _.bindAll = restArgs(callback);
+
+var restArgs = function(func, startIndex) {
+    startIndex = startIndex == null ? func.length - 1 : +startIndex;
+    startIndex = 2-1=1;
+    return function() {
+      var length = Math.max(arguments.length - 1, 0),
+          rest = Array(length),
+          index = 0;
+      for (; index < length; index++) {
+        rest[index] = arguments[index + 1];
+      }
+      switch (1) {
+        case 1: return func.call(this, arguments[0], rest);
+      }
+    };
+};
+ _.bindAll = function() {
+      var length = Math.max(arguments.length - 1, 0),
+          rest = Array(length),
+          index = 0;
+      for (; index < length; index++) {
+        rest[index] = arguments[index + 1];
+      }
+      
+      return callback.call(window, arguments[0], rest);
+  }
+-->_.bindAll(buttonView, 'onClick', 'onHover');
+--> _.bindAll = function() {
+      var length = Math.max(3 - 1, 0),
+          rest = Array(2),
+          index = 0;
+      for (; index < 2; index++) {
+        rest[index] = arguments[index + 1];
+      }
+      
+      return callback.call(buttonView, ['onClick', 'onHover']);
+  }
+-->_.bindAll(buttonView, 'onClick', 'onHover');
+-->callback.call(buttonView, ['onClick', 'onHover']);
+ callback = function(obj, keys) {
+    keys = flatten(keys, false, false);//keys =['onClick', 'onHover'] 
+    var index = 2;
+    while (index--) {
+      var key = keys[index];
+      obj[key] = _.bind(obj[key], obj);//修改this指向，obj[key]是一个函数，指向obj
+    }
+};*/
