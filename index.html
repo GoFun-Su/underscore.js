@@ -43,13 +43,18 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-   var buttonView = {
-  		label  : 'underscore',
-  		onClick: function(){ alert('clicked: ' + this.label); },
-  		onHover: function(){ console.log('hovering: ' + this.label); }};
-_.bindAll(buttonView, 'onClick', 'onHover');
-document.getElementById("underscore_button").onclick = buttonView.onClick
+  var _={}
+  _.memoize = function(func, hasher) {
+    var memoize = function(key) {
+    	console.log(this)
+    };
+    return memoize;
+};
 
+   var fibonacci = _.memoize(function(n) {
+  		return n < 2 ? n: fibonacci(n - 1) + fibonacci(n - 2);
+	});
+  console.log(fibonacci(7))
 	/*function Person (name){
 		this.name = name;
 	}

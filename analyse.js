@@ -1363,3 +1363,35 @@ var restArgs = function(func, startIndex) {
       obj[key] = _.bind(obj[key], obj);//修改this指向，obj[key]是一个函数，指向obj
     }
 };*/
+
+
+  _.memoize = function(func, hasher) {
+    var memoize = function(key) {
+      var cache = memoize.cache; //cache ={}
+      var address = '' + (hasher ? hasher.apply(this, arguments) : key); // ''+key;
+      if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
+      //cache["key"]=func.apply(this, arguments)
+      return cache[address];
+    };
+    memoize.cache = {};
+    return memoize;
+};
+/*
+callback = function(n) {
+      return n < 2 ? n: fibonacci(n - 1) + fibonacci(n - 2);
+};
+var fibonacci = _.memoize(callback);
+-->fibonacci = callback.apply(window, arguments)
+-->fibonacci = callback.apply(arguments)
+-->fibonacci(n)
+-->fibonacci = callback.apply(n)
+-->callback = function(n) {
+      return n < 2 ? n: fibonacci(n - 1) + fibonacci(n - 2);
+};
+-->fibonacci(6) + fibonacci(5)
+-->fibonacci(6)-->......-->
+-->fibonacci(2)+fibonacci(1)+fibonacci(1)+fibonacci(0)+fibonacci(1)+fibonacci(0)+1+fibonacci(1)+fibonacci(0)+1+1+0
+-->1+1+1+1+1+1+1+1
+-->fibonacci(5) -->......-->
+-->fibonacci(2)+fibonacci(1)+fibonacci(1)++fibonacci(0)+fibonacci(1)++fibonacci(0)+1
+-->1+1+1+1+1*/
