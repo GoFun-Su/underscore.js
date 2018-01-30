@@ -1364,17 +1364,17 @@ var restArgs = function(func, startIndex) {
     }
 };*/
 
-
+ //适用于需要大量重复求值的场景
   _.memoize = function(func, hasher) {
     var memoize = function(key) {
       var cache = memoize.cache; //cache ={}
       var address = '' + (hasher ? hasher.apply(this, arguments) : key); // ''+key;
       if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
-      //cache["key"]=func.apply(this, arguments)
+      //cache[''+key]=func.apply(this, arguments)
       return cache[address];
     };
     memoize.cache = {};
-    return memoize;
+    return memoize;//返回的是cache[address]，改变this指向，对于重复求值有利
 };
 /*
 callback = function(n) {
@@ -1395,3 +1395,69 @@ var fibonacci = _.memoize(callback);
 -->fibonacci(5) -->......-->
 -->fibonacci(2)+fibonacci(1)+fibonacci(1)++fibonacci(0)+fibonacci(1)++fibonacci(0)+1
 -->1+1+1+1+1*/
+
+
+
+_.delay = restArgs(function(func, wait, args) {
+    return setTimeout(function() {
+      return func.apply(null, args);
+    }, wait);
+});
+
+var callback = function(func, wait, args) {
+    return setTimeout(function() {
+      return func.apply(null, args);
+    }, wait);
+}
+_.delay = restArgs(callback);
+ var restArgs = function(func, startIndex) {
+    startIndex = 2;
+    return function() {
+      var length = Math.max(arguments.length - 2, 0),
+          rest = Array(length),
+          index = 0;
+      for (; index < length; index++) {
+        rest[index] = arguments[index + startIndex];
+      }
+     return callback.call(arguments[0], arguments[1], rest);
+  };
+}
+_.delay = function() {
+      var length = Math.max(arguments.length - 2, 0),
+          rest = Array(length),
+          index = 0;
+      for (; index < length; index++) {
+        rest[index] = arguments[index + 2];
+      }
+     return callback.call(arguments[0], arguments[1], rest);
+};
+_.delay(log, 1000, 'logged later');
+_.delay = function() {
+      var length = Math.max(3 - 2, 0),
+          rest = Array(1),
+          index = 0;
+      for (; index < 1; index++) {
+        rest[index] = arguments[index + 2];
+      }
+     return callback.call(log,1000, ['logged later']);
+};
+_.delay(log, 1000, 'logged later');
+callback(log,1000, ['logged later'])
+var callback = function(func, wait, args) {
+    return setTimeout(function() {
+      return func.apply(null, args);
+    }, wait);
+}
+callback(log,1000, ['logged later'])
+setTimeout(function() {
+      return log.apply(null, ['logged later']);
+}, 1000);
+log('logged later');
+
+
+
+var log = _.bind(console.log, console);
+log('logged later');
+-->console.log.apply(console,['logged later'])
+
+

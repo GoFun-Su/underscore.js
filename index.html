@@ -43,18 +43,10 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-  var _={}
-  _.memoize = function(func, hasher) {
-    var memoize = function(key) {
-    	console.log(this)
-    };
-    return memoize;
-};
+  
 
-   var fibonacci = _.memoize(function(n) {
-  		return n < 2 ? n: fibonacci(n - 1) + fibonacci(n - 2);
-	});
-  console.log(fibonacci(7))
+  var log = _.bind(console.log, console);
+	log('logged later');
 	/*function Person (name){
 		this.name = name;
 	}
