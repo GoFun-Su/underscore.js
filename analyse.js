@@ -1404,7 +1404,7 @@ _.delay = restArgs(function(func, wait, args) {
     }, wait);
 });
 
-var callback = function(func, wait, args) {
+/*var callback = function(func, wait, args) {
     return setTimeout(function() {
       return func.apply(null, args);
     }, wait);
@@ -1458,6 +1458,71 @@ log('logged later');
 
 var log = _.bind(console.log, console);
 log('logged later');
--->console.log.apply(console,['logged later'])
+-->console.log.apply(console,['logged later'])*/
+_.defer = _.partial(_.delay, _, 1);
+
+//options.leading为false第一次调用不会立即执行
+throttle(function() {}, 1500,{leading:false})
+_.throttle = function(func, wait, options) {
+    var timeout, context, args, result;
+     // 上一次调用func的时间点
+    var previous = 0;
+    if (!options) options = {};
+
+     // 两次调用时间间隔小于wait,创建一个延后执行的函数包裹住func的执行过程
+    var later = function () {
+        // 执行时，刷新最近一次调用时间,previous为当前时间点
+        previous = options.leading === false ? 0 : new Date();
+        // 清空定时器
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+    };
+
+    var throttled = function() {
+      var now = _.now();
+      //如果第一次调用(previous为0)，并且options.leading为false,第一次调用不会立即调用(remaining = wait )
+      if (!previous && options.leading === false) previous = now;
+      // 显然，如果第一次调用，且未设置options.leading = false，
+      //previous=0，那么remaing= wait - now，remaing>wait,func会被立即执行
+      //下次执行func等待的最短时间：预设的最小等待期-(当前时间-上次调用func的时间点)
+      //一般来说第二次开始调用的最紧凑得时间是上次时间previous+wait时间之后开始调用，此时remaining等于0
+      //如果第二次调用的时候不是最紧凑的时间，是上次时间previous+等待时间（小于wait）时间之后开始调用,
+      //此时remaining=wait - (等待时间(小于wait))>0,不会立即执行，也即是两次调用时间间隔小于wait，此时会进入到else循环中
+      //也就是在一个wait时间内触发多次事件，但是事件都会被覆盖， 只执行一次；
+      var remaining = wait - (now - previous);
+      // 记录之后执行时需要的上下文和参数
+      context = this;
+      args = arguments;
+
+      // 如果计算后能被立即执行
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+            //清空调用
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        //重新赋值上次调用func的时间点
+        previous = now;
+         // 执行func调用
+        result = func.apply(context, args);
+        //第一次的时候，timeout为null,!timeout为true，context = args = null
+        if (!timeout) context = args = null;
+      } 
+      //如果timeout清除了，并且options.trailing不为false
+      else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+
+    throttled.cancel = function() {
+      clearTimeout(timeout);
+      previous = 0;
+      timeout = context = args = null;
+    };
+
+    return throttled;
+  };
 
 

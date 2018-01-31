@@ -5,33 +5,228 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 	<title>Document</title>
 	<style type="text/css">
-		.share-list{
-    display: flex;
+		* {
+  box-sizing: border-box;
 }
-.share-item{
-    width: 60px;
-    height: 60px;
+body {
+  background: #eee;
 }
-.gap{
-    flex: 1;
-    width: 1%;
+
+.area {
+  width: 300px;
+  height: 200px;
+  margin: 20px auto;
+  background: white;
+  position: relative;
+}
+
+.inside {
+  height: 200px;
+  position: relative;
+  overflow: auto;
+}
+
+.content {
+  height: 5000px;
+}
+
+.thing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background: #f06d06;
+  color: white;
+  padding: 10px;
+}
+
+.count {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 	</style>
 </head>
 <body>
-	<ul class="share-list">
-    <li class="gap"></li>
-    <li class="share-item"></li>
-    <li class="gap"></li>
-    <li class="share-item"></li>
-    <li class="gap"></li>
-    <li class="share-item"></li>
-    <li class="gap"></li>
-    <li id="underscore_button">bunnn</li>
-</ul>
+	<div class="area area-2">
+  <div class="inside inside-2">
+    <div class="content content-2"></div>
+    <div class="thing thing-2">Throttled</div>
+  </div>
+  <div class="count count-2">0</div>
+</div>
+
+<div class="area area-3">
+  <div class="inside inside-3">
+    <div class="content content-3"></div>
+    <div class="thing thing-3">Debounced</div>
+  </div>
+  <div class="count count-3">0</div>
+</div>
 
 <script type="text/javascript" src="index.js"></script>
 <script type="text/javascript">
+
+	var restArgs = function (func, startIndex) {
+    // rest参数从哪里开始,如果没有,则默认视函数最后一个参数为rest参数
+    // 注意, 函数对象的length属性, 揭示了函数的参数个数
+    /*
+     ex: function add(a,b) {return a+b;}
+     console.log(add.length;) // 2
+     */
+    startIndex = startIndex == null ? func.length - 1 : +startIndex;
+    // 返回一个支持rest参数的函数
+    return function () {
+        // 校正参数, 以免出现负值情况
+        var length = Math.max(arguments.length - startIndex, 0);
+        // 为rest参数开辟数组存放
+        var rest = Array(length);
+        // 假设参数从2个开始: func(a,b,*rest)
+        // 调用: func(1,2,3,4,5); 实际的调用是:func.call(this, 1,2, [3,4,5]);
+        for (var index = 0; index < length; index++) {
+            rest[index] = arguments[index + startIndex];
+        }
+        // 根据rest参数不同, 分情况调用函数, 需要注意的是, rest参数总是最后一个参数, 否则会有歧义
+        switch (startIndex) {
+            case 0:
+                // call的参数一个个传
+                return func.call(this, rest);
+            case 1:
+                return func.call(this, arguments[0], rest);
+            case 2:
+                return func.call(this, arguments[0], arguments[1], rest);
+        }
+        // 如果不是上面三种情况, 而是更通用的(应该是作者写着写着发现这个switch case可能越写越长, 就用了apply)
+        var args = Array(startIndex + 1);
+        // 先拿到前面参数
+        for (index = 0; index < startIndex; index++) {
+            args[index] = arguments[index];
+        }
+        // 拼接上剩余参数
+        args[startIndex] = rest;
+        return func.apply(this, args);
+    };
+};
+  
+var throttle = function (func, wait, options) {
+
+        var timeout, context, args, result;
+        // 最近一次func被调用的时间点
+        var previous = 0;
+        if (!options) options = {};
+
+        // 创建一个延后执行的函数包裹住func的执行过程
+        var later = function () {
+            // 执行时，刷新最近一次调用时间
+            previous = options.leading === false ? 0 : new Date();
+            // 清空定时器
+            timeout = null;
+            result = func.apply(context, args);
+            if (!timeout) context = args = null;
+        };
+
+        // 返回一个throttled的函数
+        var throttled = function () {
+            // ----- 节流函数开始执行----
+            // 我们尝试调用func时，会首先记录当前时间戳
+            var now = new Date();
+            // 是否是第一次调用
+            if (!previous && options.leading === false) previous = now;
+            // func还要等待多久才能被调用 =  预设的最小等待期-（当前时间-上一次调用的时间）
+            // 显然，如果第一次调用，且未设置options.leading = false，那么remaing=0，func会被立即执行
+            var remaining = wait - (now - previous);
+            // 记录之后执行时需要的上下文和参数
+            context = this;
+            args = arguments;
+
+            // 如果计算后能被立即执行
+            if (remaining <= 0 || remaining > wait) {
+                // 清除之前的“最新调用”
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                // 刷新最近一次func调用的时间点
+                previous = now;
+                // 执行func调用
+                result = func.apply(context, args);
+                // 如果timeout被清空了，
+                if (!timeout) context = args = null;
+
+            } else if (!timeout && options.trailing !== false) {
+                // 如果设置了trailing edge，那么暂缓此次调用尝试的执行
+                timeout = setTimeout(later, remaining);
+            }
+            return result;
+        };
+
+        // 可以取消函数的节流化
+        throttled.cancel = function () {
+            clearTimeout(timeout);
+            previous = 0;
+            timeout = context = args = null;
+        };
+
+        return throttled;
+    };
+
+var debounce = function (func, wait, immediate) {
+        var timeout, result;
+
+        var later = function (context, args) {
+            timeout = null;
+            if (args) result = func.apply(context, args);
+        };
+
+        var debounced = restArgs(function (args) {
+            // 一旦存在timeout， 意味之前尝试调用过func
+            // 由于debounce只认最新的一次调用， 所以之前等待执行的func都会被终止
+            if (timeout) clearTimeout(timeout);
+            // 如果允许新的调用尝试立即执行，
+            if (immediate) {
+                // 如果之前尚没有调用尝试，那么此次调用可以立马执行，否则一定得等待之前的执行完毕
+                var callNow = !timeout;
+                // 刷新timeout
+                timeout = setTimeout(later, wait);
+                // 如果能被立即执行，立即执行
+                if (callNow) result = func.apply(this, args);
+            } else {
+                // 否则，这次尝试调用会延时wait个时间
+                timeout =restArgs(function (func, wait, args) {
+                            return setTimeout(function () {
+                                return func.apply(null, args);
+                            }, wait);
+                        })(later, wait, this, args);
+            }
+
+            return result;
+        });
+
+        debounced.cancel = function () {
+            clearTimeout(timeout);
+            timeout = null;
+        };
+
+        return debounced;
+    };
+
+var inside2 = document.querySelector(".inside-2");
+var thing2 = document.querySelector(".thing-2");
+var count2 = document.querySelector(".count-2");
+inside2.addEventListener('scroll',throttle(function() {
+  thing2.style.Top=inside2.scrollTop; 
+  count2.innerHTML=parseInt(count2.innerHTML)+1;
+}, 1500,{leading:false}),false);
+
+/*var inside3 = document.querySelector(".inside-3");
+var thing3 = document.querySelector(".thing-3");
+var count3 = document.querySelector(".count-3");
+inside3.addEventListener('scroll',debounce(function() {
+  thing3.style.Top=inside3.scrollTop; 
+  count3.innerHTML=parseInt(count3.innerHTML)+1;
+}, 150),false);*/
 	/* var cb = function(value, context, argCount) {
     if (_.iteratee !== builtinIteratee) return _.iteratee(value, context);
     if (value == null) return _.identity;
@@ -45,8 +240,7 @@
   };*/
   
 
-  var log = _.bind(console.log, console);
-	log('logged later');
+  
 	/*function Person (name){
 		this.name = name;
 	}
