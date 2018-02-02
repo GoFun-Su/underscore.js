@@ -1525,4 +1525,103 @@ _.throttle = function(func, wait, options) {
     return throttled;
   };
 
+   _.debounce = function (func, wait, immediate) {
+        var timeout, result;
+
+        var later = function (context, args) {
+            timeout = null;
+            if (args) result = func.apply(context, args);
+        };
+
+
+        var callback = function (args) {
+            // 如果在足够的等待时间，一直调用，则不会触发，直到在足够的等待的时间内没有一次触发，则会调用一次
+            if (timeout) clearTimeout(timeout);
+            // 如果允许新的调用立即执行，
+            if (immediate) {
+                // 如果存在timeout，则等待wait之后调用，否则立即调用
+                var callNow = !timeout;
+                // 如果不能被立即执行等待wait时间执行，也有可能执行不成功，时间间隔小于wait个时间
+                 timeout = setTimeout(later, wait);
+                // 如果前面没有等待的函数，能被立即执行，立即执行
+                if (callNow) result = func.apply(this, args);
+            } else {
+                // 否则，等待wait个时间会调用一次
+                timeout =restArgs(function (func, wait, args) {
+                            return setTimeout(function () {
+                                return func.apply(null, args);
+                            }, wait);
+                        })(later, wait, this, args);
+            }
+
+            return result;
+        };
+        var debounced = function () {
+            var length = Math.max(arguments.length, 0);
+            var rest = Array(length);
+            for (var index = 0; index < length; index++) {
+                rest[index] = arguments[index];
+            }
+           return callback(rest);
+        }
+
+        debounced.cancel = function () {
+            clearTimeout(timeout);
+            timeout = null;
+        };
+
+        return debounced;
+    };
+
+/*_.debounce (function() {}, 1500);
+--->
+function () {
+        var length = Math.max(arguments.length, 0);
+        var rest = Array(length);
+        for (var index = 0; index < length; index++) {
+            rest[index] = arguments[index];
+        }
+       return callback(rest);
+ }
+-->$("p").click(p = function(event){})
+
+类似-->p(event)
+-->callback([event])
+
+-->var callback = function(args) {
+      if (timeout) clearTimeout(timeout);
+      if (immediate) {
+        var callNow = !timeout;
+        timeout = setTimeout(later, wait);
+        if (callNow) result = func.apply(this, args);
+      } else {
+        timeout = restArgs(function (func, wait, args) {
+                     return setTimeout(function () {
+                          return func.apply(null, args);
+                }, wait);
+               })(later, wait, this, args);;
+      }
+      return result;
+};
+
+//第一次
+callback2 = function (func, wait, args) {
+     return setTimeout(function () {
+                return func.apply(null, args);
+        }, wait);
+};
+restArgs(callback2)(later, wait, args);
+function () {
+    var length = Math.max(4 - 2, 0);
+    var rest = Array(2);
+    for (var index = 0; index < length; index++) {
+        rest[index] = arguments[index + 2];
+    }
+   
+   return callback2.call(this,later, wait, [args]);
+}
+callback2(later, wait, [args])
+setTimeout(function () {
+        return later.apply(null, [[event]]);
+ }, wait);*/
 
