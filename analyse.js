@@ -1625,3 +1625,71 @@ setTimeout(function () {
         return later.apply(null, [[event]]);
  }, wait);*/
 
+
+   _.wrap = function(func, wrapper) {
+        return _.partial(wrapper, func);
+  };
+
+   // 返回一个 predicate 方法的对立方法
+   // 即该方法可以对原来的 predicate 迭代结果取非
+    _.negate = function(predicate) {
+        return function() {
+          return !predicate.apply(this, arguments);
+        };
+    };
+
+
+    // 多层函数调用从外到里f(g(h()))
+    _.compose = function() {
+        var args = arguments;//此arguments和下面的arguments并非一个arguments，所指的参数数组对象不一样
+        var start = args.length - 1;
+        return function() {
+          var i = start;
+          var result = args[start].apply(this, arguments);
+          while (i--) result = args[i].call(this, result);
+          return result;
+        };
+    };
+
+
+    //var times=8;--times-->7;times-- -->8;
+    //在处理同组异步请求返回结果时, 如果你要确保同组里所有异步请求完成之后才 执行这个函数, 这将非常有用。
+    //var renderNotes = _.after(notes.length, render);
+    //_.each(notes, function(note) {
+    //note.asyncSave({success: renderNotes});
+    //});
+    _.after = function(times, func) {
+        return function() {
+            // 函数被触发了 times 了，则执行 func 函数
+          if (--times < 1) {
+            return func.apply(this, arguments);
+          }
+        };
+  };
+
+
+    //创建一个函数,调用不超过count 次。 当达到count次时，返回最后一个函数调用的结果。
+    _.before = function(times, func) {
+        var memo;
+        return function() {
+          if (--times > 0) {
+            memo = func.apply(this, arguments);
+          }
+          if (times <= 1) func = null;
+          return memo;
+        };
+    };
+
+    //函数至多只能被调用一次,2是before的第一个参数
+    _.once = _.partial(_.before, 2);
+
+    _.restArgs = restArgs;
+
+
+    var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
+    var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
+                      'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+
+    
+  
+
