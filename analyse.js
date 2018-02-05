@@ -1686,9 +1686,38 @@ setTimeout(function () {
     _.restArgs = restArgs;
 
 
+
+    //https://segmentfault.com/a/1190000009385816
+    //propertyIsEnumerable() 方法返回一个布尔值，表示指定的属性是否可枚举
+    //每个对象都有一个propertyIsEnumerable方法。此方法可以确定对象中指定的属性是否可以被for...in循环枚举，
+    //但是通过原型链继承的属性除外
     var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
     var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
                       'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+
+
+
+    var collectNonEnumProps = function(obj, keys) {
+        var nonEnumIdx = nonEnumerableProps.length;
+        var constructor = obj.constructor;
+        //当constructor被重写，并且指向的不是一个函数的时候，proto = ObjProto
+        var proto = _.isFunction(constructor) && constructor.prototype || ObjProto;
+
+        var prop = 'constructor';
+        // 如果 obj 有 `constructor` 这个属性
+        // 并且该 属性 没有在 keys 数组中
+        // 存入 keys 数组
+        if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
+
+        while (nonEnumIdx--) {
+            prop = nonEnumerableProps[nonEnumIdx];
+            // obj[prop] !== proto[prop] 判断该 key 是否来自于原型链
+            // 即是否重写了原型链上的属性??不懂
+            if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
+                keys.push(prop);
+            }
+        }
+      };
 
     
   

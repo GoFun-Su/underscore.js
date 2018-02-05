@@ -43,8 +43,26 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-  var times = 8;
-  console.log(--times)
+   if (typeof /./ != 'function' && typeof Int8Array != 'object' && typeof nodelist != 'function') {
+    isFunction = function(obj) {
+      return typeof obj == 'function' || false;
+    };
+  }
+  function Person(name,age){
+  this.name = name;
+  this.age = age;
+}
+ 
+Person.prototype.getName= function(){
+    return this.name;
+ }
+Person.prototype.name = "234"
+ 
+
+var p = new Person();
+p.name = 23;
+console.log(p['name'] !== (p.constructor.prototype)['name']); //Object()
+console.log(isFunction(p.constructor) && p.constructor.prototype); //18
 	/*function Person (name){
 		this.name = name;
 	}
