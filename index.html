@@ -28,8 +28,7 @@
     <li class="share-item"></li>
     <li class="gap"></li>
     <li id="underscore_button">bunnn</li>
-</ul>
-
+    
 <script type="text/javascript" src="index.js"></script>
 <script type="text/javascript">
 	/* var cb = function(value, context, argCount) {
@@ -43,26 +42,11 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-   if (typeof /./ != 'function' && typeof Int8Array != 'object' && typeof nodelist != 'function') {
-    isFunction = function(obj) {
-      return typeof obj == 'function' || false;
-    };
-  }
-  function Person(name,age){
+    function Stooge(name) {
   this.name = name;
-  this.age = age;
 }
- 
-Person.prototype.getName= function(){
-    return this.name;
- }
-Person.prototype.name = "234"
- 
-
-var p = new Person();
-p.name = 23;
-console.log(p['name'] !== (p.constructor.prototype)['name']); //Object()
-console.log(isFunction(p.constructor) && p.constructor.prototype); //18
+Stooge.prototype.silly = true;
+console.log(_.allKeys(new Stooge("Moe")));
 	/*function Person (name){
 		this.name = name;
 	}

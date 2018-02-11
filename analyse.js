@@ -1691,6 +1691,39 @@ setTimeout(function () {
     //propertyIsEnumerable() 方法返回一个布尔值，表示指定的属性是否可枚举
     //每个对象都有一个propertyIsEnumerable方法。此方法可以确定对象中指定的属性是否可以被for...in循环枚举，
     //但是通过原型链继承的属性除外
+    //原型链继承
+    //定义一个 Animal 构造函数，作为 Dog 的父类
+        /*function Animal () {
+            this.superType = 'Animal';
+        }
+
+        Animal.prototype.superSpeak = function () {
+            alert(this.superType);
+        }
+
+        function Dog (name) {
+            this.name = name;
+            this.type = 'Dog';  
+        }
+        //改变Dog的prototype指针，指向一个 Animal 实例
+        Dog.prototype = new Animal();
+        //上面那行就相当于这么写
+        //var animal = new Animal();
+        //Dog.prototype = animal;
+
+        Dog.prototype.speak = function () {
+        　　alert(this.type);
+        }
+        var doggie = new Dog('jiwawa');
+        doggie.superSpeak();  //Animal */
+        /*首先定义了一个 Animal 构造函数，通过new Animal()得到实例，
+        会包含一个实例属性 superType 和一个原型属性 superSpeak。
+        另外又定义了一个Dog构造函数。然后情况发生变化，代码中加粗那一行，
+        将Dog的原型对象覆盖成了 animal 实例。当 doggie 去访问superSpeak属性时，
+        js会先在doggie的实例属性中查找，发现找不到，然后，js就会去doggie 的原型对象上去找，
+        doggie的原型对象已经被我们改成了一个animal实例，那就是去animal实例上去找。
+        先找animal的实例属性，发现还是没有 superSpeack, 最后去 animal 的原型对象上去找*/
+
     var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
     var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
                       'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
@@ -1717,7 +1750,47 @@ setTimeout(function () {
                 keys.push(prop);
             }
         }
-      };
+    };
+
+    _.keys = function(obj) {
+        //如果不是对象，返回一个空数组
+        if (!_.isObject(obj)) return [];
+        // 如果浏览器支持 ES5 Object.key() 方法，该方法会忽略掉那些从原型链上继承到的属性
+        // 则优先使用该方法
+        if (nativeKeys) return nativeKeys(obj);
+        var keys = [];
+        /*hasOwnProperty：所有继承了 Object 的对象都会继承到 hasOwnProperty 方法。这个方法可以用来检测一个对象是否含有特定的自身属性；
+        和 in 运算符不同，该方法会忽略掉那些从原型链上继承到的属性*/
+        for (var key in obj) if (_.has(obj, key)) keys.push(key);
+        // Ahem, IE < 9.
+        // IE < 9 下不能用 for in 来枚举某些 key 值
+        if (hasEnumBug) collectNonEnumProps(obj, keys);
+        return keys;
+    };
+
+
+
+     // 返回一个对象的 keys 数组
+    // 不仅仅是 自身属性
+    // 还包括原型链上继承的属性
+   /* function Stooge(name) {
+      this.name = name;
+    }
+    Stooge.prototype.silly = true;
+    _.allKeys(new Stooge("Moe"));
+    => ["name", "silly"]*/
+    _.allKeys = function(obj) {
+        if (!_.isObject(obj)) return [];
+        var keys = [];
+        for (var key in obj) keys.push(key);
+        // Ahem, IE < 9.??为什么和keys用同一个方法，不是就过滤掉原型链属性了吗?
+        if (hasEnumBug) collectNonEnumProps(obj, keys);
+        return keys;
+    };
+
+
+
+   
 
     
   
