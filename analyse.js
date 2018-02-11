@@ -1790,6 +1790,22 @@ setTimeout(function () {
 
 
 
+    // // 将一个对象的所有 values 值放入数组中
+    // 仅限 对象自身属性上的value
+    // 不包括原型链上的
+    // 并返回该数组
+    _.values = function(obj) {
+        var keys = _.keys(obj);
+        var length = keys.length;
+        var values = Array(length);
+        for (var i = 0; i < length; i++) {
+          values[i] = obj[keys[i]];
+        }
+        return values;
+    };
+
+
+
    
 
     

@@ -46,7 +46,8 @@
   this.name = name;
 }
 Stooge.prototype.silly = true;
-console.log(_.allKeys(new Stooge("Moe")));
+_.allKeys(new Stooge("Moe"));
+//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;
 	}
