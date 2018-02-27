@@ -1897,6 +1897,44 @@ setTimeout(function () {
 
     _.extendOwn = _.assign = createAssigner(_.keys);
 
+    // 跟数组方法的 _.findIndex 类似
+    // 找到对象中第一个满足条件的键值对
+    // 并返回该键值对的key值
+    _.findKey = function(obj, predicate, context) {
+        predicate = cb(predicate, context);
+        var keys = _.keys(obj), key;
+        for (var i = 0, length = keys.length; i < length; i++) {
+            key = keys[i];
+            if (predicate(obj[key], key, obj)) return key;
+        }
+    };
+
+
+    //判断对象中是否存在key值，存在返回true,否则返回false
+    var keyInObj = function(value, key, obj) {
+        return key in obj;
+    };
+
+
+     _.pick = restArgs(function(obj, keys) {
+        var result = {}, iteratee = keys[0];
+        if (obj == null) return result;
+        if (_.isFunction(iteratee)) {
+            if (keys.length > 1) iteratee = optimizeCb(iteratee, keys[1]);
+            keys = _.allKeys(obj);
+        } else {
+            iteratee = keyInObj;
+            keys = flatten(keys, false, false);
+            obj = Object(obj);
+        }
+        for (var i = 0, length = keys.length; i < length; i++) {
+            var key = keys[i];
+            var value = obj[key];
+            if (iteratee(value, key, obj)) result[key] = value;
+        }
+        return result;
+    });
+
    
 
     
