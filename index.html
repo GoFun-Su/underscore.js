@@ -42,11 +42,9 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
-    function Stooge(name) {
-  this.name = name;
-}
-Stooge.prototype.silly = true;
-_.allKeys(new Stooge("Moe"));
+  console.log(_.mapObject({start: 5, end: 12}, function(val, key) {
+  return val + 5;
+}),this)
 //=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;

@@ -1805,6 +1805,74 @@ setTimeout(function () {
     };
 
 
+    //它类似于map，mapObject作用于对象。iteratee函数作用于每个属性值，并返回一个新的对象。
+    _.mapObject = function(obj, iteratee, context) {
+        iteratee = cb(iteratee, context);
+        var keys = _.keys(obj),
+        length = keys.length,
+        results = {};
+        for (var index = 0; index < length; index++) {
+            var currentKey = keys[index];
+            results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+        }
+        return results;
+    };
+
+
+    //把一个对象转变为一个[key, value]形式的数组。返回数组形式[[key,value],[key,value]]
+    _.pairs = function(obj) {
+        var keys = _.keys(obj);
+        var length = keys.length;
+        var pairs = Array(length);
+        for (var i = 0; i < length; i++) {
+          pairs[i] = [keys[i], obj[keys[i]]];
+        }
+        return pairs;
+    };
+
+
+    //返回一个对象，使其键（keys）和值（values）对换。
+    //对于这个操作，需要注意的是，value 值不能重复（不然后面的会覆盖前面的）
+    _.invert = function(obj) {
+        var result = {};
+        var keys = _.keys(obj);
+        for (var i = 0, length = keys.length; i < length; i++) {
+            result[obj[keys[i]]] = keys[i];
+        }
+        return result;
+    };
+
+    //返回对象所有的方法名，并且已经排过序
+    _.functions = _.methods = function(obj) {
+        var names = [];
+        for (var key in obj) {
+            if (_.isFunction(obj[key])) names.push(key);
+        }
+        return names.sort();
+    };
+
+
+
+    var createAssigner = function(keysFunc, defaults) {
+        return function(obj) {
+            var length = arguments.length;
+            if (defaults) obj = Object(obj);
+            if (length < 2 || obj == null) return obj;
+            for (var index = 1; index < length; index++) {
+                var source = arguments[index],
+                keys = keysFunc(source),
+                l = keys.length;
+                for (var i = 0; i < l; i++) {
+                    var key = keys[i];
+                    if (!defaults || obj[key] === void 0) obj[key] = source[key];
+                }
+            }
+            return obj;
+        };
+    };
+
+
+    _.extend = createAssigner(_.allKeys);
 
    
 
