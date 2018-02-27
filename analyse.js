@@ -1872,7 +1872,30 @@ setTimeout(function () {
     };
 
 
-    _.extend = createAssigner(_.allKeys);
+    _.extend = createAssigner(_.allKeys); 
+
+
+    //_.extend(destination, *sources) 
+   /* _.extend = function(obj) {
+            //length为传的参数，如果不存在或者参数只要一个的话，直接返回obj
+            var length = arguments.length;
+            if (defaults) obj = Object(obj);
+            if (length < 2 || obj == null) return obj;
+            //如果参数不止一个，复制source对象中的所有属性覆盖到destination对象上，并且返回 destination 对象. 
+            //复制从第二个开始到最后一个,如果后面的对象相比前面的对象有重复的属性，后面的对象属性会把前面的对象属性覆盖掉
+            for (var index = 1; index < length; index++) {
+                var source = arguments[index],
+                keys = _.allKeys(source),
+                l = keys.length;
+                for (var i = 0; i < l; i++) {
+                    var key = keys[i];
+                    if (!defaults || obj[key] === void 0) obj[key] = source[key];
+                }
+            }
+            return obj;
+    };*/
+
+    _.extendOwn = _.assign = createAssigner(_.keys);
 
    
 
