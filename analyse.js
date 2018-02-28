@@ -1915,8 +1915,8 @@ setTimeout(function () {
         return key in obj;
     };
 
-
-     _.pick = restArgs(function(obj, keys) {
+    //返回一个object副本，只过滤出keys(有效的键组成的数组)参数指定的属性值。或者接受一个判断函数，指定挑选哪个key。
+    _.pick = restArgs(function(obj, keys) {
         var result = {}, iteratee = keys[0];
         if (obj == null) return result;
         if (_.isFunction(iteratee)) {
@@ -1934,6 +1934,50 @@ setTimeout(function () {
         }
         return result;
     });
+
+
+
+    /* _.pick = function() {
+            var length = Math.max(arguments.length - 1, 0),
+            rest = Array(length),
+            index = 0;
+            for (; index < length; index++) {
+                rest[index] = arguments[index + 1];
+            }
+            return func(arguments[0], rest);
+    };
+    func= function(obj, keys) {
+        var result = {}, iteratee = keys[0];
+        if (obj == null) return result;
+        //判断参数是否为函数，如果是函数，并且剩余参数的个数大于一个
+        if (_.isFunction(iteratee)) {
+            if (keys.length > 1) iteratee = optimizeCb(iteratee, keys[1]);
+            //iteratee=function(){obj1.apply(obj2, arguments)};-->用obj2对象来代替obj1，调用obj1的方法。即将obj1应用到obj2上
+           延伸 var f1= function(value, key, object) {
+              return value>40;
+            };
+            var f2= function(value, key, object) {
+              return value<10;
+            };
+            iteratee=function(){return f1.apply(f2, arguments)};
+            console.log(iteratee(50, name, {name: 23, age: 50, userid: 5}))
+            keys = _.allKeys(obj);
+        } else {
+            //判断参数如果不是函数,不是函数的话用keyInObj判断真假
+            iteratee = keyInObj;
+            //有可能keys是多维数组，展开数组，获取keys
+            keys = flatten(keys, false, false);
+            obj = Object(obj);
+        }
+        for (var i = 0, length = keys.length; i < length; i++) {
+            var key = keys[i];
+            var value = obj[key];
+            if (iteratee(value, key, obj)) result[key] = value;
+        }
+        return result;
+    }
+    //调用pick返回的是func(arguments[0], rest) rest为剩余参数组成的数组*/
+    
 
    
 
