@@ -1952,7 +1952,8 @@ setTimeout(function () {
         //判断参数是否为函数，如果是函数，并且剩余参数的个数大于一个
         if (_.isFunction(iteratee)) {
             if (keys.length > 1) iteratee = optimizeCb(iteratee, keys[1]);
-            //iteratee=function(){obj1.apply(obj2, arguments)};-->用obj2对象来代替obj1，调用obj1的方法。即将obj1应用到obj2上
+            //iteratee=function(){obj1.apply(obj2, arguments)};
+            -->用obj2对象来代替obj1，调用obj1的方法。即将obj1应用到obj2上，obj2继承obj1所有特性，即obj2的指针指向obj1方法
            延伸 var f1= function(value, key, object) {
               return value>40;
             };
@@ -1977,8 +1978,36 @@ setTimeout(function () {
         return result;
     }
     //调用pick返回的是func(arguments[0], rest) rest为剩余参数组成的数组*/
-    
 
+
+
+    //返回一个object副本，只过滤出除去keys(有效的键组成的数组)参数指定的属性值。 
+    //或者接受一个判断函数，指定忽略哪个key。返回的是调用_.pick之后的相反数
+    _.omit = restArgs(function(obj, keys) {
+        var iteratee = keys[0], context;
+        if (_.isFunction(iteratee)) {
+            iteratee = _.negate(iteratee);
+            if (keys.length > 1) context = keys[1];
+        } else {
+            keys = _.map(flatten(keys, false, false), String);
+            iteratee = function(value, key) {
+                return !_.contains(keys, key);
+            };
+        }
+        return _.pick(obj, iteratee, context);
+    });
+
+    _.defaults = createAssigner(_.allKeys, true);
+     // _.defaults(object, *defaults) 
+    //用defaults对象填充object 中的undefined属性。 并且返回这个object。
+    //一旦这个属性被填充，再使用defaults方法将不会有任何效果。
+
+
+    _.create = function(prototype, props) {
+        var result = baseCreate(prototype);
+        if (props) _.extendOwn(result, props);
+        return result;
+    };
    
 
     
