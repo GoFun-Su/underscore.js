@@ -2013,6 +2013,15 @@ setTimeout(function () {
         if (props) _.extendOwn(result, props);
         return result;
     };
+
+
+    //创建 一个浅复制（浅拷贝）的克隆object。任何嵌套的对象或数组都通过引用拷贝，不会复制。
+    _.clone = function(obj) {
+        if (!_.isObject(obj)) return obj;
+        // 如果是数组，则用 obj.slice() 返回数组副本
+        // 如果是对象，则提取所有 obj 的键值对覆盖空对象，返回
+        return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+    };
    
 
 
