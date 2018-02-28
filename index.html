@@ -45,7 +45,36 @@
   };*/
  
 
-//=> ["name", "silly"]
+
+    function Shape() {
+	  this.x = 0;
+	  this.y = 0;
+	}
+
+	// 父类的方法
+	Shape.prototype.move = function(x, y) {
+	  this.x += x;
+	  this.y += y;
+	  console.info('Shape moved.');
+	};
+
+	// Rectangle - 子类(subclass)
+	function Rectangle() {
+	  Shape.call(this);
+	}
+
+	// 子类续承父类
+	//a.prototype = b.prototype
+	//因为a实例的__proto__会指向a.prototype，然后a.prototype又指向b.prototype
+	//所以a实例的__proto__会指向b.prototype，于是a的实例可以访问b构造函数原型里定义的属性或者方法。
+	Rectangle.prototype = Shape.prototype;
+	var result = new Rectangle;
+	//把Ctor.prototype置空是为了消除prototype和 Ctor.prototype之间的引用
+    Rectangle.prototype = null;
+
+
+    Rectangle.prototype = Object.create(Shape.prototype);
+	//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;
 	}

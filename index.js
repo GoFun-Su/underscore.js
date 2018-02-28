@@ -136,6 +136,7 @@
   var baseCreate = function(prototype) {
     if (!_.isObject(prototype)) return {};
     if (nativeCreate) return nativeCreate(prototype);
+    //Object.create() 方法会使用指定的原型对象及其属性去创建一个新的对象。返回的是一个新对象
     Ctor.prototype = prototype;
     var result = new Ctor;
     Ctor.prototype = null;

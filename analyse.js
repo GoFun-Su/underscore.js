@@ -146,8 +146,12 @@
         //可以传一个null，第二个参数是对象的属性描述
         if (nativeCreate) return nativeCreate(prototype);
         //原型继承
+        //a.prototype = b.prototype
+        //因为a实例的__proto__会指向a.prototype，然后a.prototype又指向b.prototype
+        //所以a实例的__proto__会指向b.prototype，于是a的实例可以访问b构造函数原型里定义的属性或者方法。
         Ctor.prototype = prototype;
         var result = new Ctor;
+        //把Ctor.prototype置空是为了消除prototype和 Ctor.prototype之间的引用
         Ctor.prototype = null;
         return result;
     };
@@ -1981,8 +1985,8 @@ setTimeout(function () {
 
 
 
-    //返回一个object副本，只过滤出除去keys(有效的键组成的数组)参数指定的属性值。 
-    //或者接受一个判断函数，指定忽略哪个key。返回的是调用_.pick之后的相反数
+    //过滤出除去keys(有效的键组成的数组)参数指定的属性值。 
+    //或者接受一个判断函数，指定忽略哪个key。返回的是调用_.pick之后的补集
     _.omit = restArgs(function(obj, keys) {
         var iteratee = keys[0], context;
         if (_.isFunction(iteratee)) {
@@ -2005,10 +2009,13 @@ setTimeout(function () {
 
     _.create = function(prototype, props) {
         var result = baseCreate(prototype);
+         // 将 props 的键值对覆盖 result 对象
         if (props) _.extendOwn(result, props);
         return result;
     };
    
+
+
 
     
   
