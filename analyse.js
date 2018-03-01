@@ -63,7 +63,7 @@
     		exports._ = _;
   	} else {
     		    
-    		    ._ = _;
+    		root._ = _;
   	}
 
   	// 当前版本
@@ -2021,6 +2021,33 @@ setTimeout(function () {
         // 如果是数组，则用 obj.slice() 返回数组副本
         // 如果是对象，则提取所有 obj 的键值对覆盖空对象，返回
         return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+    };
+
+
+    //_.chain([1,2,3,200])
+    //   .tap(alert)没看懂 _.chain返回的是实例对象，怎么调用_.tap方法，
+    //实例对象继承原型对象属性和方法，普通的函数没有继承
+    /*var Fun = function(name){this.name = name;}
+    Fun.get = function(){alert(this.name)}
+    var p = new Fun("123");
+    p.get() p.get()报错*/
+    _.tap = function(obj, interceptor) {
+        interceptor(obj);
+        return obj;
+    };
+
+
+    //_.isMatch(object, properties) 
+    //匹配object中是否含有properties，键值对存在
+    _.isMatch = function(object, attrs) {
+        var keys = _.keys(attrs), length = keys.length;
+        if (object == null) return !length;
+        var obj = Object(object);
+        for (var i = 0; i < length; i++) {
+            var key = keys[i];
+            if (attrs[key] !== obj[key] || !(key in obj)) return false;
+        }
+        return true;
     };
    
 
