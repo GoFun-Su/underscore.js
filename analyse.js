@@ -2049,6 +2049,102 @@ setTimeout(function () {
         }
         return true;
     };
+
+
+    var eq, deepEq;
+    eq = function(a, b, aStack, bStack) {
+        //首先js数据类型一共为String、Number、Boolean、Array、Object、Null、Undefined,Function
+        //能用===判断的有字符串、数字、布尔值，在这里===主要考虑的是0
+        //a !== 0用来比较除0之外的，1/0！==1/-0，一个为正数，一个为负数，在js中我们一般认为正负0是不相等的， 
+        if (a === b) return a !== 0 || 1 / a === 1 / b;
+        //一个为null，即为false
+        if (a == null || b == null) return false;
+        //这里考虑的是NaN,如果a为NaN，b为NaN返回true,即认为NaN == NaN
+        if (a !== a) return b !== b;
+        var type = typeof a;
+        if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
+        //比较数组和对象
+        return deepEq(a, b, aStack, bStack);
+    };
+
+
+    deepEq = function(a, b, aStack, bStack) {
+        // 如果 a 和 b 是 underscore OOP 的对象
+        // 那么比较 _wrapped 属性值（Unwrap）
+        if (a instanceof _) a = a._wrapped;
+        if (b instanceof _) b = b._wrapped;
+        var className = toString.call(a);
+        if (className !== toString.call(b)) return false;
+        switch (className) {
+            //'' + obj 会将 obj 强制转为 String
+            // 根据 '' + a === '' + b 即可判断 a 和 b 是否相等,RegExp和String为相似类
+            case '[object RegExp]':
+            case '[object String]':
+                return '' + a === '' + b;
+            case '[object Number]':
+                // 如果a = NaN，判断 b 是否也是 NaN 即可，即NaN===NaN
+                if (+a !== +a) return +b !== +b;
+                // 如果a =0，判断 +0和-0,被认为不相等，即NaN===NaN，
+                //如果a不等于0，用 +a 将 Number() 形式转为基本类型,即 +Number(1) ==> 1
+                return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+            case '[object Date]':
+            // Object.prototype.toString.call(new Date())-->"[object Date]"
+            //Object.prototype.toString.call("2017-3-12")-->"[object String]"
+            case '[object Boolean]':
+                //+new Date() -->1519884009188
+                //+true -->1
+                //+日期类型转换为毫秒数，+布尔值转换为0或者1
+                return +a === +b;
+            case '[object Symbol]':
+                return SymbolProto.valueOf.call(a) === SymbolProto.valueOf.call(b);
+        }
+
+        var areArrays = className === '[object Array]';
+        // 如果 a 不是数组类型
+        if (!areArrays) {
+             // 如果 a 不是 object 或者 b 不是 object
+            // 则返回 false
+            if (typeof a != 'object' || typeof b != 'object') return false;
+            //此时a或者b均为对象
+            var aCtor = a.constructor, bCtor = b.constructor;
+            if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
+                               _.isFunction(bCtor) && bCtor instanceof bCtor)
+                          && ('constructor' in a && 'constructor' in b)) {
+                return false;
+            }
+        }
+        
+        //加入栈是为了比较多维数组或者对象的，栈是先进后出，一层一层比较，进栈比较相等出栈，
+        //比较下一个，直到最后将原始数据出栈比较完毕,可以模拟进栈出栈了解
+        aStack = aStack || [];
+        bStack = bStack || [];
+        var length = aStack.length;
+        while (length--) {
+            if (aStack[length] === a) return bStack[length] === b;
+        }
+
+        aStack.push(a);
+        bStack.push(b);
+        if (areArrays) {
+            length = a.length;
+            if (length !== b.length) return false;
+            while (length--) {
+                if (!eq(a[length], b[length], aStack, bStack)) return false;
+            }
+        } else {
+            var keys = _.keys(a), key;
+            length = keys.length;
+            if (_.keys(b).length !== length) return false;
+            while (length--) {
+                key = keys[length];
+                if (!(_.has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
+            }
+        }
+        aStack.pop();
+        bStack.pop();
+        return true;
+    };
+
    
 
 

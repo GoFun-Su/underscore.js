@@ -45,31 +45,7 @@
   };*/
  
 
-	var m = function(obj) {
-	    //if (obj instanceof m) return obj;
-	    
-	   // this._wrapped = obj;
-  	};
-  	/*m.chain = function(obj) {
-	    var instance = m(obj);
-	    return instance;
-  	};*/
-  	
-   /* m.chain([1,2,3,200])
-    console.log(m.chain([1,2,3,200]))*/
-
-    var Fun = function(name){
-    	this.name = name;
-    }
-    Fun.get = function(){
-    	alert(this.name)
-    }
-    var p = new Fun("123");
-  	p.get()
-    console.log(p)
-  		//.tap(alert)
-
-  	
+	console.log(_.isEqual(0, -0))
 	//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;
