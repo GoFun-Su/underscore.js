@@ -2145,6 +2145,26 @@ setTimeout(function () {
         return true;
     };
 
+
+    //0和-0不相等，NaN和NaN相等
+     _.isEqual = function(a, b) {
+        return eq(a, b);
+    };
+
+
+    _.isEmpty = function(obj) {
+        if (obj == null) return true;
+        //判断除对象之外(不包含类数组对象)
+        if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+        //判断对象，但是不是类数组对象
+        return _.keys(obj).length === 0;
+    };
+
+    //如果节点是元素节点，则 nodeType 属性将返回 1。
+    //用两个感叹号的作用就在于将这些值转换为“等价”的布尔值
+     _.isElement = function(obj) {
+        return !!(obj && obj.nodeType === 1);
+    };
    
 
 
