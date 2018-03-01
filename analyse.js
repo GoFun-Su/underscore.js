@@ -2185,6 +2185,50 @@ setTimeout(function () {
             return toString.call(obj) === '[object ' + name + ']';
         };
     });
+
+
+    // _.isArguments 方法在 IE < 9 下的兼容
+    // IE < 9 下对 arguments 调用 Object.prototype.toString.call 方法
+    // 结果是[object Object], 而不是[object Arguments]。
+    //allee 属性是 arguments 对象的一个成员
+    if (!_.isArguments(arguments)) {
+        _.isArguments = function(obj) {
+            return _.has(obj, 'callee');
+        };
+    }
+
+    //childNodes为body元素的子节点
+    var nodelist = root.document && root.document.childNodes;
+    if (typeof /./ != 'function' && typeof Int8Array != 'object' && typeof nodelist != 'function') {
+        _.isFunction = function(obj) {
+            return typeof obj == 'function' || false;
+        };
+    }
+
+
+    _.isFinite = function(obj) {
+        return !_.isSymbol(obj) && isFinite(obj) && !isNaN(parseFloat(obj));
+    };
+
+    _.isNaN = function(obj) {
+        return _.isNumber(obj) && isNaN(obj);
+    };
+
+    _.isBoolean = function(obj) {
+        return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+    };
+
+    _.isNull = function(obj) {
+        return obj === null;
+    };
+
+    // 判断是否是 undefined
+    // undefined 能被改写 （IE < 9）
+    // undefined 只是全局对象的一个属性
+    // 在局部环境能被重新定义
+    _.isUndefined = function(obj) {
+        return obj === void 0;
+    };
    
 
 
