@@ -2165,6 +2165,26 @@ setTimeout(function () {
      _.isElement = function(obj) {
         return !!(obj && obj.nodeType === 1);
     };
+
+
+    //判断是否是数组
+    _.isArray = nativeIsArray || function(obj) {
+        return toString.call(obj) === '[object Array]';
+    };
+
+    //判断是否是对象(包含函数或者对象)
+    _.isObject = function(obj) {
+        var type = typeof obj;
+        return type === 'function' || type === 'object' && !!obj;
+    };
+
+
+    // 其他类型判断
+     _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error', 'Symbol', 'Map', 'WeakMap', 'Set', 'WeakSet'], function(name) {
+        _['is' + name] = function(obj) {
+            return toString.call(obj) === '[object ' + name + ']';
+        };
+    });
    
 
 
