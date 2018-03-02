@@ -2345,6 +2345,21 @@ setTimeout(function () {
      // escapeMap 用于编码，invert用于将键值对互换
     var unescapeMap = _.invert(escapeMap);
 
+    var createEscaper = function(map) {
+        var escaper = function(match) {
+            return map[match];
+        };
+        var source = '(?:' + _.keys(map).join('|') + ')';
+        var testRegexp = RegExp(source);
+        var replaceRegexp = RegExp(source, 'g');
+        return function(string) {
+            string = string == null ? '' : '' + string;
+            return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+        };
+    };
+    _.escape = createEscaper(escapeMap);
+    _.unescape = createEscaper(unescapeMap);
+
 
     
   
