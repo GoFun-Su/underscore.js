@@ -44,8 +44,14 @@
     };
   };*/
  	
- 	var stooge = {'name':{'name1':{'name2':'moe'}}};
-    console.log( _.random(2,5))
+    console.log(_.keys({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '`': '&#x60;'
+    }).join('|'))
 	//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;

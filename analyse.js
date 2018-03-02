@@ -2345,11 +2345,13 @@ setTimeout(function () {
      // escapeMap 用于编码，invert用于将键值对互换
     var unescapeMap = _.invert(escapeMap);
 
+    //转义HTML字符串，替换&, <, >, ", ', 和 /字符
+    //_.escape('Curly, Larry & Moe')
     var createEscaper = function(map) {
         var escaper = function(match) {
             return map[match];
         };
-        var source = '(?:' + _.keys(map).join('|') + ')';
+        var source = '(?:' + _.keys(map).join('|') + ')'; //(?:&|<|>|"|'|`)
         var testRegexp = RegExp(source);
         var replaceRegexp = RegExp(source, 'g');
         return function(string) {
@@ -2357,8 +2359,28 @@ setTimeout(function () {
             return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
         };
     };
+    //编码
     _.escape = createEscaper(escapeMap);
+    //解码
     _.unescape = createEscaper(unescapeMap);
+
+
+    _.result = function(obj, path, fallback) {
+        if (!_.isArray(path)) path = [path];
+        var length = path.length;
+        if (!length) {
+            return _.isFunction(fallback) ? fallback.call(obj) : fallback;
+        }
+        for (var i = 0; i < length; i++) {
+            var prop = obj == null ? void 0 : obj[path[i]];
+            if (prop === void 0) {
+                prop = fallback;
+                i = length; // Ensure we don't continue iterating.
+            }
+            obj = _.isFunction(prop) ? prop.call(obj) : prop;
+        }
+        return obj;
+    };
 
 
     
