@@ -2358,7 +2358,7 @@ setTimeout(function () {
         var escaper = function(match) {
             return map[match];
         };
-        var source = '(?:' + _.keys(map).join('|') + ')';
+        var source = '(?:' + _.keys(map).join('|') + ')'; 
         var testRegexp = RegExp(source);
         var replaceRegexp = RegExp(source, 'g');
         return function(string) {
