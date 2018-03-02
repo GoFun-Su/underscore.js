@@ -2345,13 +2345,20 @@ setTimeout(function () {
      // escapeMap 用于编码，invert用于将键值对互换
     var unescapeMap = _.invert(escapeMap);
 
-    //转义HTML字符串，替换&, <, >, ", ', 和 /字符
-    //_.escape('Curly, Larry & Moe')
+     //转义HTML字符串，替换&, <, >, ", ', 和 /字符
+     //_.escape('Curly, Larry & Moe')
+     //(?:X)在正则中表示所匹配的子组X不作为结果输出
+     //正常情况(X)中的X会被作为新增的一个组序号输出，比如(A)(B)，A的序号1,B的序号2
+     //如果(?:A)(B)，A将没有序号不输出,B的序号为1
+     //string.replace(replaceRegexp, escaper)
+     //replace（）方法的参数replacement可以是函数而不是字符串。在这种情况下，每个匹配都调用该函数，
+     //它返回的字符串将替换文本使用。第一个参数表示匹配到的字符，
+     // 第二个参数表示匹配到的字符最小索引位置（RegExp.index），第三个参数表示被匹配的字符串（RegExp.input）
     var createEscaper = function(map) {
         var escaper = function(match) {
             return map[match];
         };
-        var source = '(?:' + _.keys(map).join('|') + ')'; //(?:&|<|>|"|'|`)
+        var source = '(?:' + _.keys(map).join('|') + ')';
         var testRegexp = RegExp(source);
         var replaceRegexp = RegExp(source, 'g');
         return function(string) {
@@ -2375,7 +2382,7 @@ setTimeout(function () {
             var prop = obj == null ? void 0 : obj[path[i]];
             if (prop === void 0) {
                 prop = fallback;
-                i = length; // Ensure we don't continue iterating.
+                i = length; 
             }
             obj = _.isFunction(prop) ? prop.call(obj) : prop;
         }
