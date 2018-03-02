@@ -2303,11 +2303,19 @@ setTimeout(function () {
     };
 
 
+    // 判断一个给定的对象是否有某些键值对
     _.matcher = _.matches = function(attrs) {
         attrs = _.extendOwn({}, attrs);
         return function(obj) {
             return _.isMatch(obj, attrs);
         };
+    };
+
+    _.times = function(n, iteratee, context) {
+        var accum = Array(Math.max(0, n));
+        iteratee = optimizeCb(iteratee, context, 1);
+        for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+        return accum;
     };
 
 
