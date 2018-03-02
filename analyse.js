@@ -2229,8 +2229,86 @@ setTimeout(function () {
     _.isUndefined = function(obj) {
         return obj === void 0;
     };
+
+
+
+    //对象是否包含给定的键,等同于object.hasOwnProperty(key)
+    //path可以是数组
+    _.has = function(obj, path) {
+        if (!_.isArray(path)) {
+            return obj != null && hasOwnProperty.call(obj, path);
+        }
+        //下面的有什么用处？？？
+        var length = path.length;
+        for (var i = 0; i < length; i++) {
+            var key = path[i];
+            if (obj == null || !hasOwnProperty.call(obj, key)) {
+                return false;
+            }
+            //obj = obj[key];??这两行的用处
+        }
+        //return !!length;
+        return true;
+    };
+
+
+
+    // 如果全局环境中已经使用了 `_` 变量,previousUnderscore被更改过
+    // 可以用该方法返回其他变量，继续使用 underscore 中的方法
+    // var underscore = _.noConflict();
+    // underscore.has(..);
+    _.noConflict = function() {
+        root._ = previousUnderscore;
+        return this;
+    };
    
 
+    //返回传入的参数
+    _.identity = function(value) {
+        return value;
+    };
+
+    //创建一个函数，这个函数返回值是传入_.constant的参数。
+    _.constant = function(value) {
+        return function() {
+            return value;
+        };
+    };
+
+    //返回一个函数
+    _.noop = function(){};
+
+
+    //返回一个函数，这个函数返回任何传入的对象的key属性。
+    //var stooge = {name: 'moe'}; _.property('name')(stooge);
+    //var stooge = {'name':{'name1':{'name2':'moe'}}};console.log(_.property(['name','name1','name2'])(stooge))
+    _.property = function(path) {
+        if (!_.isArray(path)) {
+            return shallowProperty(path);
+        }
+        return function(obj) {
+            return deepGet(obj, path);
+        };
+    };
+
+    //与property相反
+    //var stooge = {name: 'moe'};_.propertyOf(stooge)('name');
+    _.propertyOf = function(obj) {
+        if (obj == null) {
+            return function(){};
+        }
+        return function(path) {
+            return !_.isArray(path) ? obj[path] : deepGet(obj, path);
+        };
+    };
+
+
+    _.matcher = _.matches = function(attrs) {
+        attrs = _.extendOwn({}, attrs);
+        return function(obj) {
+            return _.isMatch(obj, attrs);
+        };
+    };
 
 
     
