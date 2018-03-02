@@ -2318,6 +2318,33 @@ setTimeout(function () {
         return accum;
     };
 
+    //Math.random()返回大于等于 0.0 且小于 1.0 
+    _.random = function(min, max) {
+        if (max == null) {
+            max = min;
+            min = 0;
+        }
+        //return min + Math.floor(Math.random() * (max - min + 1));这句话最后取的数不对,random不包含最大的数？？
+        return min + Math.floor(Math.random() * (max - min));
+    };
+
+    //返回当前时间的 "时间戳"（单位 ms）
+    _.now = Date.now || function() {
+        return new Date().getTime();
+    };
+
+
+    var escapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '`': '&#x60;'
+    };
+     // escapeMap 用于编码，invert用于将键值对互换
+    var unescapeMap = _.invert(escapeMap);
+
 
     
   
