@@ -1114,7 +1114,7 @@
                             return executeBound(func, bound, this, this, args);
                     };
                     return bound;
-        });      
+        //});      
     }());
     _.partial.placeholder = _;
 
@@ -2398,6 +2398,183 @@ setTimeout(function () {
         }
         return obj;
     };
+
+    var idCounter = 0;
+    //生成一个全局唯一的id
+    _.uniqueId = function(prefix) {
+        var id = ++idCounter + '';
+        return prefix ? prefix + id : id;
+    };
+
+    // Underscore 默认采用 ERB-style 风格模板，也可以根据自己习惯自定义模板
+    // 1. <%  %> 
+    // 2. <%= %> 
+    // 3. <%- %> 
+    //\s 空白符 \S 非空白符 [\s\S]任意字符
+    _.templateSettings = {
+        evaluate: /<%([\s\S]+?)%>/g,
+        interpolate: /<%=([\s\S]+?)%>/g,
+        escape: /<%-([\s\S]+?)%>/g
+    };
+
+    //^是正则表达式匹配字符串开始位置
+    var noMatch = /(.)^/;
+
+    var escapes = {
+        "'": "'",
+        '\\': '\\',
+        '\r': 'r',
+        '\n': 'n',
+        '\u2028': 'u2028',
+        '\u2029': 'u2029'
+    };
+
+    var escapeRegExp = /\\|'|\r|\n|\u2028|\u2029/g;
+
+    var escapeChar = function(match) {
+        return '\\' + escapes[match];
+    };
+
+
+     _.template = function(text, settings, oldSettings) {
+        if (!settings && oldSettings) settings = oldSettings;
+        settings = _.defaults({}, settings, _.templateSettings);
+
+        var matcher = RegExp([
+            (settings.escape || noMatch).source,
+            (settings.interpolate || noMatch).source,
+            (settings.evaluate || noMatch).source
+        ].join('|') + '|$', 'g');
+
+        var index = 0;
+        var source = "__p+='";
+        text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+            source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
+            index = offset + match.length;
+
+            if (escape) {
+                source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+            } else if (interpolate) {
+                source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+            } else if (evaluate) {
+                source += "';\n" + evaluate + "\n__p+='";
+            }
+
+            return match;
+        });
+        source += "';\n";
+
+        if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+        source = "var __t,__p='',__j=Array.prototype.join," +
+        "print=function(){__p+=__j.call(arguments,'');};\n" +
+        source + 'return __p;\n';
+
+        var render;
+        try {
+            render = new Function(settings.variable || 'obj', '_', source);
+        } catch (e) {
+            e.source = source;
+            throw e;
+        }
+
+        var template = function(data) {
+            return render.call(this, data, _);
+        };
+
+        var argument = settings.variable || 'obj';
+        template.source = 'function(' + argument + '){\n' + source + '}';
+
+        return template;
+    };
+
+
+
+    // 非 OOP 调用 chain
+    //_.chain([1, 2, 3])
+    //.map(function(a) { return a * 2; })
+    //.reverse().value(); // [6, 4, 2]
+    // OOP 调用 chain
+    // _([1, 2, 3])
+    //.chain()
+    //.map(function(a){ return a * 2; })
+    //.first()
+    //.value(); 
+    _.chain = function(obj) {
+        //instance为_的实列对象, 无论是否 OOP 调用，都会转为 OOP 形式
+        var instance = _(obj);
+        instance._chain = true;
+        return instance;
+    };
+
+
+    // 如果需要链式操作，则对 obj 运行 _.chain 方法，使得可以继续后续的链式操作
+    // 如果不需要，直接返回 obj
+    var chainResult = function(instance, obj) {
+        return instance._chain ? _(obj).chain() : obj;
+    };
+
+
+    _.mixin = function(obj) {
+        //返回obj对象所有的方法名，并且已经排过序
+        _.each(_.functions(obj), function(name) {
+            var func = _[name] = obj[name];
+            //将obj中的方法(obj[name])一一拷贝到_的原型上(_.prototype[方法名])
+            _.prototype[name] = function() {
+                var args = [this._wrapped];
+                //ArrayProto.push
+                push.apply(args, arguments);
+                return chainResult(this, func.apply(_, args));
+            };
+        });
+        return _;
+    };
+
+    _.mixin(_);
+
+
+
+    // 将 Array 原型链上有的方法都添加到 underscore 中
+    _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
+        var method = ArrayProto[name];
+        _.prototype[name] = function() {
+            var obj = this._wrapped;
+            method.apply(obj, arguments);
+            if ((name === 'shift' || name === 'splice') && obj.length === 0) delete obj[0];
+            return chainResult(this, obj);
+        };
+    });
+
+    // 添加 concat、join、slice 等数组原生方法给 Underscore
+    _.each(['concat', 'join', 'slice'], function(name) {
+        var method = ArrayProto[name];
+        _.prototype[name] = function() {
+            return chainResult(this, method.apply(this._wrapped, arguments));
+        };
+    });
+
+     _.prototype.value = function() {
+        return this._wrapped;
+    };
+
+
+    _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+
+    _.prototype.toString = function() {
+        return String(this._wrapped);
+    };
+
+
+    if (typeof define == 'function' && define.amd) {
+        define('underscore', [], function() {
+            return _;
+        });
+    };
+
+}());
+
+    
+
 
 
     

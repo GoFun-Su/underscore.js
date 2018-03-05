@@ -43,9 +43,7 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
- 	var object = {'cheese': {'nameP':{'name':'crumpets'}},stuff: function(){ return 'nonsense'; }};
-	console.log(_.result(object, 'stuff'));
-	console.log(function(){ return this.cheese; }.call(object));
+ 	console.log(_.mixin(_))
 	//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;
