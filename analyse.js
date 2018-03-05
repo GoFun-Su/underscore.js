@@ -2500,6 +2500,9 @@ setTimeout(function () {
     //.map(function(a){ return a * 2; })
     //.first()
     //.value(); 
+
+
+    //_.chain([1,2,3]) --->_([1,2,3]).chain()
     _.chain = function(obj) {
         //instance为_的实列对象, 无论是否 OOP 调用，都会转为 OOP 形式
         var instance = _(obj);
@@ -2532,7 +2535,7 @@ setTimeout(function () {
 
     _.mixin(_);
 
-
+   
 
     // 将 Array 原型链上有的方法都添加到 underscore 中
     _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
