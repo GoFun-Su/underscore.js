@@ -2503,6 +2503,8 @@ setTimeout(function () {
 
 
     //_.chain([1,2,3]) --->_([1,2,3]).chain()
+    //_.chain([1, 2, 3]).tap(alert) 
+    //实例要调用 tap 方法，其本身没有这个方法，那么应该来自原型链，也就是说 _.prototype 上应该有这个方法
     _.chain = function(obj) {
         //instance为_的实列对象, 无论是否 OOP 调用，都会转为 OOP 形式
         var instance = _(obj);
