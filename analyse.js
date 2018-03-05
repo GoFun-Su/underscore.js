@@ -2372,13 +2372,23 @@ setTimeout(function () {
     _.unescape = createEscaper(unescapeMap);
 
 
+    
+    //var object = {'cheese': {'nameP':{'name':'crumpets'}},stuff: function(){ return 'nonsense'; }};
+    //console.log(_.result(object,['cheese','nameP','name'], 'cheese'));
+    //如果第二个参数存在，则多层查找value值，直到返回正确的key-value值,path为obj的key组成的数组
+    //如果查找不到，判断第三个参数是函数或者不是函数，如果是函数，调用fallback函数，prop.call(obj)-->obj继承prop,this指向obj
+    //如果是值，返回值
     _.result = function(obj, path, fallback) {
+        //如果path不是数组，返回数组
         if (!_.isArray(path)) path = [path];
         var length = path.length;
+        //如果length= 0
         if (!length) {
             return _.isFunction(fallback) ? fallback.call(obj) : fallback;
         }
+        //如果length不等于0
         for (var i = 0; i < length; i++) {
+            //获取key-->value值
             var prop = obj == null ? void 0 : obj[path[i]];
             if (prop === void 0) {
                 prop = fallback;

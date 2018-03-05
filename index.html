@@ -29,7 +29,7 @@
   <li class="gap"></li> -->
     <li id="underscore_button">bunnn</li>
     
- <!-- <script type="text/javascript" src="index.js"></script> -->
+ <script type="text/javascript" src="index.js"></script> 
 <script type="text/javascript">
 	document.getElementById("underscore_button").innerHTML="4545\n<table style=\"width:100%;\" cellpadding=\"2\" cellspacing=\"0\" border=\"1\" bordercolor=\"#000000\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align:right;\">\n\t\t\t\t涂鸦跳跃\n\t\t\t</td>\n\t\t\t<td style=\"text-align:right;\">\n\t\t\t\t差个还给回复\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>\n\t\t\t\t日反弹如同仁堂\n\t\t\t</td>\n\t\t\t<td style=\"text-align:center;\">\n\t\t\t\t黄飞鸿兔兔\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>\n\t\t\t\t回复给后台\n\t\t\t</td>\n\t\t\t<td style=\"text-align:center;\">\n\t\t\t\t还发个话让她返回\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n<br />\n${resource_56387} \n${resource_56388}";
 	/* var cb = function(value, context, argCount) {
@@ -43,17 +43,9 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
- 	var escaper = function(match) {
- 		console.log(match);
- 		return "&&";
-    };
- 	var getString = function(string) {
- 		var source = '(?:&|g|<)'; 
-        var replaceRegexp = RegExp(source, 'g');
-      	return string.replace(replaceRegexp, escaper) 
-    };
-    
-    console.log(getString('Curly, Larry & Moe'))
+ 	var object = {'cheese': {'nameP':{'name':'crumpets'}},stuff: function(){ return 'nonsense'; }};
+	console.log(_.result(object, 'stuff'));
+	console.log(function(){ return this.cheese; }.call(object));
 	//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;
