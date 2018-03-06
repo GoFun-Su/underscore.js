@@ -19,19 +19,33 @@
 	</style>
 </head>
 <body>
-	<ul class="share-list">
-  <!--   <li class="gap"></li>
-  <li class="share-item"></li>
-  <li class="gap"></li>
-  <li class="share-item"></li>
-  <li class="gap"></li>
-  <li class="share-item"></li>
-  <li class="gap"></li> -->
-    <li id="underscore_button">bunnn</li>
+	<ul id="ul"></ul>
     
  <script type="text/javascript" src="index.js"></script> 
+ <script type="text/html" id="user_tmpl">
+    <%for ( var i = 0; i < users.length; i++ ) { %>
+        <li>
+            <a href="<%=users[i].url%>">
+                <%=users[i].name%>
+            </a>
+        </li>
+    <% } %>
+</script>
 <script type="text/javascript">
-	document.getElementById("underscore_button").innerHTML="4545\n<table style=\"width:100%;\" cellpadding=\"2\" cellspacing=\"0\" border=\"1\" bordercolor=\"#000000\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align:right;\">\n\t\t\t\t涂鸦跳跃\n\t\t\t</td>\n\t\t\t<td style=\"text-align:right;\">\n\t\t\t\t差个还给回复\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>\n\t\t\t\t日反弹如同仁堂\n\t\t\t</td>\n\t\t\t<td style=\"text-align:center;\">\n\t\t\t\t黄飞鸿兔兔\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>\n\t\t\t\t回复给后台\n\t\t\t</td>\n\t\t\t<td style=\"text-align:center;\">\n\t\t\t\t还发个话让她返回\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n<br />\n${resource_56387} \n${resource_56388}";
+	var container = document.getElementById("ul");
+
+var data = {
+    users: [
+        { "name": "Kevin", "url": "http://localhost" },
+        { "name": "Daisy", "url": "http://localhost" },
+        { "name": "Kelly", "url": "http://localhost" }
+    ]
+}
+var precompile = _.template(document.getElementById("user_tmpl").innerHTML);
+var html = precompile(data);
+
+container.innerHTML = html;
+
 	/* var cb = function(value, context, argCount) {
     if (_.iteratee !== builtinIteratee) return _.iteratee(value, context);
     if (value == null) return _.identity;
@@ -43,7 +57,7 @@
       return obj == null ? void 0 : obj[key];
     };
   };*/
- 	 _chain([1,2,3,200]).tap(alert)
+ 	// _chain([1,2,3,200]).tap(alert)
 	//=> ["name", "silly"]
 	/*function Person (name){
 		this.name = name;

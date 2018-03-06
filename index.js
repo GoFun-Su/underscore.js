@@ -1561,14 +1561,13 @@
       (settings.interpolate || noMatch).source,
       (settings.evaluate || noMatch).source
     ].join('|') + '|$', 'g');
-
+    console.log(matcher)
     // Compile the template source, escaping string literals appropriately.
     var index = 0;
     var source = "__p+='";
     text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
       source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
       index = offset + match.length;
-
       if (escape) {
         source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
       } else if (interpolate) {
@@ -1596,7 +1595,6 @@
       e.source = source;
       throw e;
     }
-
     var template = function(data) {
       return render.call(this, data, _);
     };
@@ -1604,7 +1602,6 @@
     // Provide the compiled source as a convenience for precompilation.
     var argument = settings.variable || 'obj';
     template.source = 'function(' + argument + '){\n' + source + '}';
-
     return template;
   };
 

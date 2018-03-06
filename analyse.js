@@ -2435,7 +2435,17 @@ setTimeout(function () {
         return '\\' + escapes[match];
     };
 
-
+    //render是最后拼接成功的字符串，是一个函数
+   /* render = function(obj,_){
+            var _t,_p="",__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');}
+            with(obj||{}){
+                __p+='\n    ';
+                for ( var i = 0; i < **.length; i++ ) { 
+                     _p+="users[i].url";
+                }
+                return _p;
+            }
+        }调用--->render(data)*/
      _.template = function(text, settings, oldSettings) {
         if (!settings && oldSettings) settings = oldSettings;
         settings = _.defaults({}, settings, _.templateSettings);
@@ -2445,18 +2455,19 @@ setTimeout(function () {
             (settings.interpolate || noMatch).source,
             (settings.evaluate || noMatch).source
         ].join('|') + '|$', 'g');
-
+        //matcher = /<%-([\s\S]+?)%>|<%=([\s\S]+?)%>|<%([\s\S]+?)%>|$/g -->$表示结束
         var index = 0;
         var source = "__p+='";
         text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+
             source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
             index = offset + match.length;
 
-            if (escape) {
+            if (escape) {// -->/<%-([\s\S]+?)%>/g
                 source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
-            } else if (interpolate) {
+            } else if (interpolate) {// -->/<%=([\s\S]+?)%>/g 是值
                 source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
-            } else if (evaluate) {
+            } else if (evaluate) {// -->//<%([\s\S]+?)%>/g //<%for ( var i = 0; i <9; i++ ) { %>不是获取值
                 source += "';\n" + evaluate + "\n__p+='";
             }
 
@@ -2469,10 +2480,9 @@ setTimeout(function () {
         source = "var __t,__p='',__j=Array.prototype.join," +
         "print=function(){__p+=__j.call(arguments,'');};\n" +
         source + 'return __p;\n';
-
         var render;
         try {
-            render = new Function(settings.variable || 'obj', '_', source);
+            render = new Function('', source);
         } catch (e) {
             e.source = source;
             throw e;
@@ -2483,7 +2493,7 @@ setTimeout(function () {
         };
 
         var argument = settings.variable || 'obj';
-        template.source = 'function(' + argument + '){\n' + source + '}';
+        template.source = 'function(' + argument + '){\n' + source + '}';//这句的作用不明白
 
         return template;
     };
