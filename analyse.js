@@ -2166,7 +2166,6 @@ setTimeout(function () {
         return !!(obj && obj.nodeType === 1);
     };
 
-
     //判断是否是数组
     _.isArray = nativeIsArray || function(obj) {
         return toString.call(obj) === '[object Array]';
